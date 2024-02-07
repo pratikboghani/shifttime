@@ -10,7 +10,9 @@ class UserSettingScreen extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SingleChildScrollView(child: UserInfoScreen(),),
+        body: SingleChildScrollView(
+          child: UserInfoScreen(),
+        ),
       ),
     );
   }
@@ -58,11 +60,34 @@ class UserInfoScreen extends StatelessWidget {
   }
 }
 
-class UserInfoCard extends StatelessWidget {
+class UserInfoCard extends StatefulWidget {
   final String title;
   final Map<String, String> data;
 
   UserInfoCard({required this.title, required this.data});
+
+  @override
+  _UserInfoCardState createState() => _UserInfoCardState();
+}
+
+class _UserInfoCardState extends State<UserInfoCard> {
+  late Map<String, TextEditingController> controllers;
+
+  @override
+  void initState() {
+    super.initState();
+    controllers = Map.fromEntries(
+      widget.data.keys.map(
+            (key) => MapEntry(key, TextEditingController(text: widget.data[key])),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    controllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,21 +102,22 @@ class UserInfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              title,
+              widget.title,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Divider(height: 16),
-            ...data.entries.map((entry) => UserInfoItem(
-              label: entry.key,
-              value: entry.value,
-            )),
+            ...widget.data.entries.map(
+                  (entry) => UserInfoItem(
+                label: entry.key,
+                value: entry.value,
+              ),
+            ),
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // TODO: Open edit window for this card
-                _showEditDialog(context, title, data);
+                _showEditDialog(context, widget.title, widget.data);
               },
-              child: Text('Edit $title'),
+              child: Text('Edit ${widget.title}'),
             ),
           ],
         ),
@@ -100,27 +126,71 @@ class UserInfoCard extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context, String title, Map<String, String> data) {
-    // TODO: Implement edit dialog
-    // This is where you can create a dialog or a separate screen for editing the data.
-    // You can use TextEditingController for text fields and other form elements.
-    // After editing, update the data accordingly.
-    // For simplicity, a placeholder message is shown here.
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Edit $title'),
-          content: Text('Placeholder for edit dialog'),
+          content: Column(
+            children: [
+              ...data.entries.map(
+                    (entry) => UserInfoEditableItem(
+                  label: entry.key,
+                  controller: controllers[entry.key]!,
+                ),
+              ),
+            ],
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                applyChanges();
+                Navigator.of(context).pop();
+              },
+              child: Text('Save Changes'),
             ),
           ],
         );
       },
+    );
+  }
+
+  void applyChanges() {
+    setState(() {
+      widget.data.keys.forEach(
+            (key) => widget.data[key] = controllers[key]!.text,
+      );
+    });
+  }
+}
+
+class UserInfoEditableItem extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+
+  UserInfoEditableItem({required this.label, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(width: 8),
+          Expanded(
+            child: TextFormField(
+              controller: controller,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
