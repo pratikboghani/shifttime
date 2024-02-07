@@ -20,7 +20,7 @@ const clrGreenDark60 = Color(0xFF1b4322);
 const clrGreenDark70 = Color(0xFF14321a);
 const clrGreenDark80 = Color(0xFF0d2111);
 const clrGreenDark90 = Color(0xFF071109);
-
+const clrBlack = Colors.black;
 const clrWhite = Colors.white;
 const blueColor = Color(0xFF1B5A77);
 const greyColor = Colors.black;
@@ -115,6 +115,7 @@ final ThemeData mytheme= ThemeData(
     unselectedItemColor: clrGreenDark50,
     ),
 
+    listTileTheme: const ListTileThemeData(textColor: clrBlack, selectedColor: clrGreenOriginal),
     // Divider
     dividerTheme: const DividerThemeData(
     color: clrGreenDark30,

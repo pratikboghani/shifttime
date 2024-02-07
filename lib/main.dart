@@ -1,5 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shifttime/screens/admin_home_screen.dart';
 import 'package:shifttime/screens/login_screen.dart';
 import 'package:shifttime/screens/user_home_screen.dart';
 import 'package:shifttime/utilities/constants.dart';
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
       debugShowCheckedModeBanner: false,
         home: SafeArea(
-          child: UserHomeScreen(),
+          child: AdminHomeScreen(),
       //   child:AnimatedSplashScreen(
       //     splash: 'images/ShiftTimeIcon.png',
       //     nextScreen: LoginScreen(),
