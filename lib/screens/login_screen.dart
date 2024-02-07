@@ -1,11 +1,15 @@
+import 'dart:js_interop';
+
 import 'package:extension/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utilities/constants.dart';
 import '../utilities/raised_button_widget.dart';
 import '../utilities/text_form_field_widget.dart';
-import 'home_screen.dart';
+import 'user_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -15,20 +19,105 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late String userId, password;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _clientIdController = TextEditingController();
   bool isChecked = false;
 
+  //show snakebar
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
 
+      duration: const Duration(seconds: 2),
+      backgroundColor: Colors.red,
+      // shape: RoundedRectangleBorder(
+      //   borderRadius: BorderRadius.circular(50.0),
+      // ),
+    ));
+  }
+  //validate if email, password and client id is empty or not
+  bool _validateFields() {
+    if (_emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _clientIdController.text.isEmpty) {
+      _showSnackbar('All fields are required');
+      return false;
+    } else if (!_isValidEmail(_emailController.text)) {
+      _showSnackbar('Invalid email format');
+      return false;
+    }
+    if (isChecked) {
+      _saveLoginCredentials();
+    }
+    return true;
+  }
+  void _saveLoginCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', _emailController.text);
+    prefs.setString('password', _passwordController.text);
+    prefs.setString('clientId', _clientIdController.text);
+  }
+  bool _isValidEmail(String email) {
+    //  regular expression for email validation
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  Future<void> loginUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String savedEmail = prefs.getString('email') ?? '';
+    String savedPassword = prefs.getString('password') ?? '';
+    String savedClientId = prefs.getString('clientId') ?? '';
+
+    _emailController.text = savedEmail;
+    _passwordController.text = savedPassword;
+    _clientIdController.text = savedClientId;
+
+    final url = 'http://localhost:3000/users/login';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'loginWith': '0',
+          'email': _emailController.text,
+          'password': _passwordController.text,
+          'clientId': _clientIdController.text,
+        }),
+      );
+
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData['type'] == 'SUCCESS') {
+        final String token = responseData['response']['token'];
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UserHomeScreen()),
+        );
+      } else {
+        _showSnackbar(responseData['message']);
+      }
+    } catch (error) {
+      _showSnackbar('Failed to load data');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+
       backgroundColor: clrGeenOriginal,
       body: Align(
         alignment: Alignment.bottomCenter,
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -40,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Container(
                   height: height * 0.88,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(110.0),
@@ -48,28 +137,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.only(top: 40.0),
+                    padding: const EdgeInsets.only(top: 40.0),
                     child: Form(
                       key: _formKey,
                       child: ListView(
                         shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         scrollDirection: Axis.vertical,
                         children: [
                           Hero(
                             tag: 'tagImage',
                             child: Center(
                               child: Image(
-                                image: AssetImage('images/shifttime.png'),
+                                image: const AssetImage('images/shifttime.png'),
                                 height: height * .2,
                                 width: height * .5,
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10.0,
                           ),
-                          Center(
+                          const Center(
                             child: Text(
                               'Login',
                               style: TextStyle(
@@ -81,10 +170,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10.0,
                           ),
-                          Center(
+                          const Center(
                             child: Text(
                               'Employee Shift Scheduling System',
                               style: TextStyle(
@@ -95,10 +184,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10.0,
                           ),
-                          Row(
+                          const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
@@ -123,12 +212,38 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ],
-                          ),
-                          SizedBox(
+                          ),const SizedBox(
                             height: 10.0,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                            padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                            child: Center(
+                              child: Container(
+                                width: width * .6,
+                                child: TextFormFieldWidget(
+                                  keyboardType: TextInputType.number,
+                                  validator: (String value) {
+                                    if (value.isEmpty) {
+                                      return 'Client Id is required';
+                                    }
+                                  },
+                                  controller:_clientIdController,
+
+                                  labelText: 'Client Id',
+                                  hintText: 'enter your client id',
+                                  icon: const Icon(
+                                    Icons.lock_outlined,
+                                    color: clrGeenOriginal,
+                                  ), maxLength: 100,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10.0,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                             child: Center(
                               child: Container(
                                 width: width * .6,
@@ -136,15 +251,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.text,
                                   validator: (String value) {
                                     if (value.isEmpty) {
-                                      return 'userId is required';
+                                      return 'Email is required';
                                     }
                                   },
-                                  onSaved: (String value) {
-                                    userId = value.capitalizeFirstLetter();
-                                  },
-                                  labelText: 'userId',
-                                  hintText: 'enter your userId',
-                                  icon: Icon(
+
+
+                                  controller: _emailController,
+                                  labelText: 'Email',
+                                  hintText: 'enter your email',
+                                  icon: const Icon(
                                     Icons.person,
                                     color: clrGeenOriginal,
                                   ), maxLength:100,
@@ -152,11 +267,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10.0,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 50.0, right: 50.0),
+                            padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                             child: Center(
                               child: Container(
                                 width: width * .6,
@@ -165,15 +280,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.text,
                                   validator: (String value) {
                                     if (value.isEmpty) {
-                                      return 'password is required';
+                                      return 'Password is required';
                                     }
                                   },
-                                  onSaved: (value) {
-                                    password = value;
-                                  },
-                                  labelText: 'password',
+                                  controller: _passwordController,
+                                  labelText: 'Password',
                                   hintText: 'enter your password',
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.lock_outlined,
                                     color: clrGeenOriginal,
                                   ), maxLength: 100,
@@ -181,31 +294,31 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Checkbox(
-                                value: isChecked,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    // isChecked = newValue;
-                                    print(isChecked);
-                                  });
-                                },
-                                activeColor: clrGreenOriginalLight,
-                                checkColor: blueColor,
-                              ),
-                              Text(
-                                'Remember Me                               ',
-                                style: TextStyle(
-                                  color: Color(0xFF5E5F5E),
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: fontFamily,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
+
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     Checkbox(
+                          //       value: isChecked,
+                          //       onChanged: (newValue) {
+                          //         setState(() {
+                          //           isChecked = newValue!;
+                          //         });
+                          //       },
+                          //       activeColor: clrGreenOriginalLight,
+                          //       checkColor: blueColor,
+                          //     ),
+                          //     const Text(
+                          //       'Remember Me',
+                          //       style: TextStyle(
+                          //         color: Color(0xFF5E5F5E),
+                          //         fontWeight: FontWeight.bold,
+                          //         fontFamily: fontFamily,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          const SizedBox(
                             height: 20.0,
                           ),
                           Row(
@@ -214,34 +327,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               RaisedButtonWidget(
                                 buttonText: 'Log In',
                                 onPressed: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                                  );
-                                  // if (_formKey.currentState != null) {
-                                  //   if (!_formKey.currentState.validate()) {
-                                  //     return;
-                                  //   }
-                                  //   _formKey.currentState.save();
-                                  //   FocusScopeNode currentFocus =
-                                  //   FocusScope.of(context);
-                                  //   if (!currentFocus.hasPrimaryFocus) {
-                                  //     currentFocus.unfocus();
-                                  //   }
-                                  // }
-                                  // if (isChecked == true) {
-                                  //   SharedPreferences prefs =
-                                  //   await SharedPreferences.getInstance();
-                                  //   prefs.setString('userId', userId);
-                                  //   prefs.setString('password', password);
-                                  // }
-                                  // Navigator.push(
-                                  //     context,
-                                  //     PageTransition(
-                                  //         child:
-                                  //         TotalTaskScreen(userId: userId),
-                                  //         type: PageTransitionType.scale,
-                                  //         alignment: Alignment.topCenter));
+                                  if (_validateFields()) {
+                                    loginUser();
+                                  }
                                 },
                                 bgColor: clrGreenOriginalLight,
                                 buttonTextColor: blueColor,

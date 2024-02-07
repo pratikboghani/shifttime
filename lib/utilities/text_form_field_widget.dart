@@ -10,7 +10,7 @@ class TextFormFieldWidget extends StatelessWidget {
         required this.icon,
         required this.keyboardType,
         required this.validator,
-        required this.onSaved,
+        required this.controller,
         this.obSecureText = false, required this.maxLength});
 
   final int maxLength;
@@ -18,11 +18,12 @@ class TextFormFieldWidget extends StatelessWidget {
   final Icon icon;
   final TextInputType keyboardType;
   final Function validator;
-  final Function onSaved;
   final bool obSecureText;
+  final TextEditingController controller;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       obscureText: obSecureText,
       keyboardType: keyboardType,
       maxLength: maxLength,

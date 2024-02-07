@@ -1,6 +1,8 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shifttime/screens/login_screen.dart';
+import 'package:shifttime/screens/user_home_screen.dart';
+import 'package:shifttime/utilities/constants.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,13 +29,16 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: SafeArea(
-        child:AnimatedSplashScreen(
-          splash: 'images/ShiftTimeIcon.png',
 
-          nextScreen: LoginScreen(),
-          splashTransition: SplashTransition.rotationTransition,
-      )
+      debugShowCheckedModeBanner: false,
+        home: SafeArea(
+          child: UserHomeScreen(),
+      //   child:AnimatedSplashScreen(
+      //     splash: 'images/ShiftTimeIcon.png',
+      //     nextScreen: LoginScreen(),
+      //     splashTransition: SplashTransition.rotationTransition,
+      //     animationDuration: Duration(seconds: 1),
+      // )
     ));
   }
 }
