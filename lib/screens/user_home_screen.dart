@@ -33,7 +33,7 @@ class _NavigationState extends State<Navigation> {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: clrGeenOriginal,
+        backgroundColor: clrGreenOriginal,
         title: Text('ShiftTime', style: TextStyle(color: clrWhite, fontSize: 30, letterSpacing: 1, fontWeight: FontWeight.bold),),
         leading: Image(image: const AssetImage('images/ShiftTimeIconWhite.png'),),
       ),
@@ -72,7 +72,7 @@ class _NavigationState extends State<Navigation> {
                 margin: const EdgeInsets.all(8.0),
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: clrGeenOriginal,
+                  color: clrGreenOriginal,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
@@ -89,7 +89,7 @@ class _NavigationState extends State<Navigation> {
               margin: const EdgeInsets.all(8.0),
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: clrGeenOriginal,
+                color: clrGreenOriginal,
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Text(
@@ -111,7 +111,7 @@ backgroundColor: clrGreenOriginalLight,
             currentPageIndex = index;
           });
         },
-        indicatorColor: clrGeenOriginal,
+        indicatorColor: clrGreenOriginal,
         selectedIndex: currentPageIndex,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: const <Widget>[

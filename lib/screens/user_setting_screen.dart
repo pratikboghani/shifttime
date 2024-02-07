@@ -12,6 +12,7 @@ class UserSettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+theme: mytheme,
       home: Scaffold(
         body: SingleChildScrollView(
           child: UserInfoScreen(),

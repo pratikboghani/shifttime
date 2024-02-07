@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
 
-      backgroundColor: clrGeenOriginal,
+      backgroundColor: clrGreenOriginal,
       body: Align(
         alignment: Alignment.bottomCenter,
         child: SingleChildScrollView(
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.bold,
-                                color: clrGeenOriginal,
+                                color: clrGreenOriginal,
                                 fontFamily: fontFamily,
                               ),
                             ),
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold,
-                                  color: clrGeenOriginal,
+                                  color: clrGreenOriginal,
                                   fontFamily: fontFamily,
                                 ),
                               ),
@@ -233,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: 'enter your client id',
                                   icon: const Icon(
                                     Icons.lock_outlined,
-                                    color: clrGeenOriginal,
+                                    color: clrGreenOriginal,
                                   ), maxLength: 100,
                                 ),
                               ),
@@ -261,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: 'enter your email',
                                   icon: const Icon(
                                     Icons.person,
-                                    color: clrGeenOriginal,
+                                    color: clrGreenOriginal,
                                   ), maxLength:100,
                                 ),
                               ),
@@ -288,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   hintText: 'enter your password',
                                   icon: const Icon(
                                     Icons.lock_outlined,
-                                    color: clrGeenOriginal,
+                                    color: clrGreenOriginal,
                                   ), maxLength: 100,
                                 ),
                               ),

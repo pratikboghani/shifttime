@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const clrGeenOriginal = Color(0xff43a756);
+const clrGreenOriginal = Color(0xff43a756);
 const clrGreenOriginalLight = Color(0xFFd9eddd);
 const clrGreenWhite10 = Color(0xFF56b067);
 const clrGreenWhite20 = Color(0xFF69b978);
@@ -40,3 +40,113 @@ const welcomeTextWidget = Text(
 );
 
 const fontFamily = 'Rubik';
+
+final ThemeData mytheme= ThemeData(
+    // Colors
+    primaryColor: clrGreenOriginal,
+    hintColor: clrGreenDark50,
+    scaffoldBackgroundColor: clrWhite, // Customize the error color here
+
+    // Typography
+    textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: clrGreenOriginal),
+    bodyMedium: TextStyle(color: clrGreenDark50),
+    titleLarge: TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
+
+    // Customize more text styles as needed
+    ),
+    appBarTheme: const AppBarTheme(
+    backgroundColor: clrGreenOriginal,
+    foregroundColor: clrWhite,
+    titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    ),
+
+    // Buttons
+    buttonTheme: const ButtonThemeData(
+    buttonColor: clrGreenOriginal,
+    textTheme: ButtonTextTheme.primary,
+    ),
+
+    // Input decoration
+    inputDecorationTheme: const InputDecorationTheme(
+    fillColor: clrGreenWhite10,
+    filled: true,
+    focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: clrGreenOriginal),
+    ),
+    enabledBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: clrGreenOriginalLight),
+    ),
+    errorBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.red),
+    ),
+    // Customize more input decoration properties as needed
+    ),
+
+    // Dialogs
+    dialogTheme: DialogTheme(
+    backgroundColor: clrWhite,
+    titleTextStyle: const TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
+    contentTextStyle: const TextStyle(color: clrGreenDark50),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16),
+    ),
+    ),
+
+    // Snackbars
+    snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Colors.red,
+    contentTextStyle: TextStyle(color: clrWhite),
+    ),
+
+    // Card
+    cardTheme: CardTheme(
+    color: clrGreenWhite90,
+    elevation: 4,
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16),
+    ),
+    ),
+
+    // Bottom Navigation Bar
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    backgroundColor: clrGreenOriginal,
+    selectedItemColor: clrWhite,
+    unselectedItemColor: clrGreenDark50,
+    ),
+
+    // Divider
+    dividerTheme: const DividerThemeData(
+    color: clrGreenDark30,
+    space: 16,
+    thickness: 1,
+    ),
+
+    // Toggle Buttons
+    toggleButtonsTheme: ToggleButtonsThemeData(
+    color: clrGreenDark50,
+    selectedColor: clrGreenOriginal,
+    fillColor: clrGreenWhite10,
+    borderRadius: BorderRadius.circular(8),
+    borderWidth: 1,
+    ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+          if (states.contains(MaterialState.hovered)) {
+            return clrGreenWhite90; // Hover color
+          }
+          return clrWhite; // Default color
+        },
+      ),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0), // Border radius for the button
+        ),
+      ),
+    ),
+  ),
+
+
+);
