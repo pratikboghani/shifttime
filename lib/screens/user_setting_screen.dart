@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../utilities/constants.dart';
+import '../utilities/text_form_field_widget.dart';
+
 void main() {
   runApp(UserSettingScreen());
 }
@@ -131,15 +134,17 @@ class _UserInfoCardState extends State<UserInfoCard> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Edit $title'),
-          content: Column(
-            children: [
-              ...data.entries.map(
-                    (entry) => UserInfoEditableItem(
-                  label: entry.key,
-                  controller: controllers[entry.key]!,
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                ...data.entries.map(
+                      (entry) => UserInfoEditableItem(
+                    label: entry.key,
+                    controller: controllers[entry.key]!,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -182,11 +187,20 @@ class UserInfoEditableItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(width: 8),
+          // Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          // SizedBox(width: 8),
           Expanded(
-            child: TextFormField(
+            child: TextFormFieldWidget(
               controller: controller,
+              labelText: label,
+              hintText: 'enter your $label',
+              maxLength:100,
+              keyboardType: TextInputType.text,
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Email is required';
+                }
+              }, icon: const Icon(null),
             ),
           ),
         ],
