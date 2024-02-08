@@ -33,13 +33,13 @@ class _MyAppState extends State<MyApp> {
 
       debugShowCheckedModeBanner: false,
         home: SafeArea(
-          child: AdminHomeScreen(),
-      //   child:AnimatedSplashScreen(
-      //     splash: 'images/ShiftTimeIcon.png',
-      //     nextScreen: LoginScreen(),
-      //     splashTransition: SplashTransition.rotationTransition,
-      //     animationDuration: Duration(seconds: 1),
-      // )
+          // child: AdminHomeScreen(),
+        child:AnimatedSplashScreen(
+          splash: 'images/ShiftTimeIcon.png',
+          nextScreen: LoginScreen(),
+          splashTransition: SplashTransition.rotationTransition,
+          animationDuration: Duration(seconds: 1),
+      )
     ));
   }
 }

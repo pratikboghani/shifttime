@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginUser() async {
 
-    final url = 'http://localhost:3000/users/login';
+    final url = '$apiPrefix /users/login';
     try {
       final response = await http.post(
         Uri.parse(url),

@@ -25,7 +25,9 @@ const clrWhite = Colors.white;
 const blueColor = Color(0xFF1B5A77);
 const greyColor = Colors.black;
 //Color(0xFF5E5F5E);
-const apiPrefix = 'http://103.155.115.118:8686/';
+// const apiPrefix = 'https://shifttime.onrender.com';
+// const apiPrefix = 'http://103.155.115.118:8686/';
+const apiPrefix = 'http://localhost:3000';
 
 const welcomeTextStyle = TextStyle(
   fontSize: 23,
