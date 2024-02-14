@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:shifttime/utilities/constants.dart';
+
+import '../utilities/getSession.dart';
 
 class EmployeeListPage extends StatefulWidget {
   const EmployeeListPage({Key? key}) : super(key: key);
@@ -19,6 +22,7 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
     super.initState();
     fetchData();
   }
+
 
   Future<void> fetchData() async {
     final response = await http.get(Uri.parse('$apiPrefix/users'));
@@ -52,6 +56,73 @@ class UserCard extends StatelessWidget {
   final Map<String, dynamic> userData;
 
   UserCard({required this.userData});
+  Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete User'),
+          content: Text('Are you sure you want to delete this user?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _deleteUser(context);
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteUser(BuildContext context) async {
+    final userId = userData['_id'];
+
+    final authToken = userToken;
+    try {
+      final response = await http.delete(
+        Uri.parse('$apiPrefix/users/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // User deleted successfully, you may want to refresh the list
+        // You can call fetchData() again or update the state accordingly
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User deleted successfully'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete user: ${response.statusCode}'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $error'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +147,12 @@ class UserCard extends StatelessWidget {
                 Text('Email: ${userData['email']}'),
                 Text('Role: ${userData['role']}'),
                 Text('Gender: ${userData['gender']}'),
-                // Add more user data fields as needed
+                Text('birthdate: ${userData['birthdate']}'),
+                Text('mobile: ${userData['mobile']}'),
+                Text('clientId: ${userData['clientId']}'),
+                Text('password: ${userData['password']}'),
+                // Text('_id: ${userData['_id']}'),
+
               ],
             ),
           ),
@@ -95,8 +171,7 @@ class UserCard extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () {
-                    // Handle delete action
-                    // Show a confirmation dialog and delete the user if confirmed
+                    _showDeleteConfirmationDialog(context);
                   },
                 ),
               ],

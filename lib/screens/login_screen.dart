@@ -1,14 +1,15 @@
-import 'dart:js_interop';
-
 import 'package:extension/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shifttime/utilities/setSession.dart';
 import '../utilities/constants.dart';
+import '../utilities/getSession.dart';
 import '../utilities/raised_button_widget.dart';
 import '../utilities/text_form_field_widget.dart';
+import 'admin_home_screen.dart';
 import 'user_home_screen.dart';
 import 'package:intl/intl.dart';
 class LoginScreen extends StatefulWidget {
@@ -66,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return emailRegex.hasMatch(email);
   }
 
+
   Future<void> loginUser() async {
 
     final url = '$apiPrefix /users/login';
@@ -82,15 +84,32 @@ class _LoginScreenState extends State<LoginScreen> {
           'clientId': _clientIdController.text,
         }),
       );
-
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData['type'] == 'SUCCESS') {
-        final String token = responseData['response']['token'];
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const UserHomeScreen()),
-        );
+        final String userToken = responseData['response']['token'];
+        final String userRole = responseData['response']['user']['role'];
+
+        await setSession('userToken', userToken);
+        await setSession('userRole', userRole);
+        String data = await loadSession('userToken');
+        String userRoleData = await loadSession('userRole');
+
+        print('Token: $data');
+        print('userRoleData: $userRoleData');
+        if(userRoleData == "EMPLOYEE"){
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const UserHomeScreen()),
+          );
+        }
+        else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
+          );
+        }
+
       } else {
         _showSnackbar(responseData['message']);
       }
@@ -539,7 +558,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             RaisedButtonWidget(
-              buttonText: 'Log In',
+              buttonText: 'Update Log In',
               onPressed: () async {
                 if (_validateFields()) {
                   loginUser();

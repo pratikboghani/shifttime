@@ -14,7 +14,7 @@ class AdminHomeScreen extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme:mytheme,
-      home: const AdminHomePage(),
+      home: SafeArea(child: const AdminHomePage()),
     );
   }
 }

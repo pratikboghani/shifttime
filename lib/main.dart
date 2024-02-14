@@ -5,8 +5,7 @@ import 'package:shifttime/screens/login_screen.dart';
 import 'package:shifttime/screens/user_home_screen.dart';
 import 'package:shifttime/utilities/constants.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() {runApp(const MyApp());
 }
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
