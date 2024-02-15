@@ -87,8 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData['type'] == 'SUCCESS') {
-        final String userToken = responseData['response']['token'];
-        final String userRole = responseData['response']['user']['role'];
+          userToken = responseData['response']['token'];
+          userRole = responseData['response']['user']['role'];
+          userId= responseData['response']['user']['_id'];
 
         await setSession('userToken', userToken);
         await setSession('userRole', userRole);
@@ -293,6 +294,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (_validateFields()) {
                   loginUser();
                 }
+              },
+              bgColor: clrGreenOriginalLight,
+              buttonTextColor: blueColor,
+            ),
+            RaisedButtonWidget(
+              buttonText: 'Log In admin',
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
+                );
+              },
+              bgColor: clrGreenOriginalLight,
+              buttonTextColor: blueColor,
+            ),
+            RaisedButtonWidget(
+              buttonText: 'Log In user',
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserHomeScreen()),
+                );
               },
               bgColor: clrGreenOriginalLight,
               buttonTextColor: blueColor,

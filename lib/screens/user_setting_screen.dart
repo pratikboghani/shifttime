@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import '../utilities/constants.dart';
 import '../utilities/text_form_field_widget.dart';
 
@@ -23,45 +25,65 @@ class UserSettingScreen extends StatelessWidget {
   }
 }
 
-class UserInfoScreen extends StatelessWidget {
+class UserInfoScreen extends StatefulWidget {
+  @override
+  _UserInfoScreenState createState() => _UserInfoScreenState();
+}
+
+class _UserInfoScreenState extends State<UserInfoScreen> {
+  Map<String, dynamic> userData = {};
+  @override
+  void initState() {
+    super.initState();
+    fetchData('$apiPrefix/users/$userId').then((data) {
+      setState(() {
+
+        userData = data['response'];
+      });
+    }).catchError((error) {
+      print('Error fetching data: $error');
+      // Handle error, show a message, or take appropriate action
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
+      child: userData != null
+          ? Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           UserInfoCard(
             title: 'Profile',
             data: {
-              'First Name': 'Ankit',
-              'Last Name': 'Maniya',
-              'Email': 'ankit2024@gmail.com',
-              'Gender': 'Male',
-              'Username': '3jhplfuHPGBQ',
-              'Birth Date': '',
-              'Mobile Number': 'ankit2024@gmail.com',
-              'Client ID': '3jhplfuHPGBQ',
+              'First Name': userData['firstName'] ?? '',
+              'Last Name': userData['lastName'] ?? '',
+              'Email': userData['email'] ?? '',
+              'Gender': userData['gender'] ?? '',
+              'Username': userData['userName'] ?? '',
+              'Birth Date': userData['birthdate'] ?? '',
+              'Mobile Number': userData['mobile'].toString() ?? '',
+              'Client ID': userData['clientId'].toString() ?? '',
             },
           ),
           SizedBox(height: 16),
           UserInfoCard(
             title: 'Emergency Information',
             data: {
-              'Emergency Contact': 'Pratik',
-              'Emergency Contact Number': '',
+              'Emergency Contact': userData['emergencyContactName'].toString() ?? '',
+              'Emergency Contact Number': userData['emergencyContactNumber'].toString() ?? '',
             },
           ),
           SizedBox(height: 16),
           UserInfoCard(
             title: 'Password Information',
             data: {
-              'Password': '12345678',
+              'Password': '********',
             },
           ),
         ],
-      ),
+      ):CircularProgressIndicator(),
     );
   }
 }
@@ -105,6 +127,7 @@ class _UserInfoCardState extends State<UserInfoCard> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(

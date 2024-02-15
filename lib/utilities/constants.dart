@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 const clrGreenOriginal = Color(0xff43a756);
@@ -153,3 +155,17 @@ final ThemeData mytheme= ThemeData(
 
 
 );
+Future<Map<String, dynamic>> fetchData(String apiUrl) async {
+  final response = await http.get(Uri.parse(apiUrl));
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load data');
+  }
+}
+
+// session variables
+var userToken;
+var userRole ;
+var userId;

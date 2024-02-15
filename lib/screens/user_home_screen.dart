@@ -36,6 +36,10 @@ class _NavigationState extends State<Navigation> {
         backgroundColor: clrGreenOriginal,
         title: Text('ShiftTime', style: TextStyle(color: clrWhite, fontSize: 30, letterSpacing: 1, fontWeight: FontWeight.bold),),
         leading: Image(image: const AssetImage('images/ShiftTimeIconWhite.png'),),
+        actions: [Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Text('Pratik', style: TextStyle(color: clrWhite, fontSize: 20, letterSpacing: 1, fontWeight: FontWeight.bold,),),
+        )],
       ),
       body: <Widget>[
       /// Notifications page
