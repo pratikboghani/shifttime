@@ -1,14 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
 import '../utilities/constants.dart';
 import '../utilities/text_form_field_widget.dart';
 
 void main() {
   runApp(UserSettingScreen());
 }
+
+Map<String, dynamic> userData = {};
 
 class UserSettingScreen extends StatelessWidget {
   @override
@@ -31,13 +33,11 @@ class UserInfoScreen extends StatefulWidget {
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
-  Map<String, dynamic> userData = {};
   @override
   void initState() {
     super.initState();
     fetchData('$apiPrefix/users/$userId').then((data) {
       setState(() {
-
         userData = data['response'];
       });
     }).catchError((error) {
@@ -50,40 +50,43 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: userData != null
+      child: userData.isNotEmpty
           ? Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          UserInfoCard(
-            title: 'Profile',
-            data: {
-              'First Name': userData['firstName'] ?? '',
-              'Last Name': userData['lastName'] ?? '',
-              'Email': userData['email'] ?? '',
-              'Gender': userData['gender'] ?? '',
-              'Username': userData['userName'] ?? '',
-              'Birth Date': userData['birthdate'] ?? '',
-              'Mobile Number': userData['mobile'].toString() ?? '',
-              'Client ID': userData['clientId'].toString() ?? '',
-            },
-          ),
-          SizedBox(height: 16),
-          UserInfoCard(
-            title: 'Emergency Information',
-            data: {
-              'Emergency Contact': userData['emergencyContactName'].toString() ?? '',
-              'Emergency Contact Number': userData['emergencyContactNumber'].toString() ?? '',
-            },
-          ),
-          SizedBox(height: 16),
-          UserInfoCard(
-            title: 'Password Information',
-            data: {
-              'Password': '********',
-            },
-          ),
-        ],
-      ):CircularProgressIndicator(),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                UserInfoCard(
+                  title: 'Profile',
+                  data: {
+                    'First Name': userData['firstName'] ?? '',
+                    'Last Name': userData['lastName'] ?? '',
+                    'Email': userData['email'] ?? '',
+                    'Gender': userData['gender'] ?? '',
+                    'Username': userData['userName'] ?? '',
+                    'Birth Date': userData['birthdate'] ?? '',
+                    'Mobile Number': userData['mobile'].toString() ?? '',
+                    'Client ID': userData['clientId'].toString() ?? '',
+                  },
+                ),
+                SizedBox(height: 16),
+                UserInfoCard(
+                  title: 'Emergency Information',
+                  data: {
+                    'Emergency Contact':
+                        userData['emergencyContactName'].toString() ?? '',
+                    'Emergency Contact Number':
+                        userData['emergencyContactNumber'].toString() ?? '',
+                  },
+                ),
+                SizedBox(height: 16),
+                UserInfoCard(
+                  title: 'Password Information',
+                  data: {
+                    'Password': '********',
+                  },
+                ),
+              ],
+            )
+          : CircularProgressIndicator(),
     );
   }
 }
@@ -106,7 +109,7 @@ class _UserInfoCardState extends State<UserInfoCard> {
     super.initState();
     controllers = Map.fromEntries(
       widget.data.keys.map(
-            (key) => MapEntry(key, TextEditingController(text: widget.data[key])),
+        (key) => MapEntry(key, TextEditingController(text: widget.data[key])),
       ),
     );
   }
@@ -127,7 +130,6 @@ class _UserInfoCardState extends State<UserInfoCard> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
@@ -136,7 +138,7 @@ class _UserInfoCardState extends State<UserInfoCard> {
             ),
             Divider(height: 16),
             ...widget.data.entries.map(
-                  (entry) => UserInfoItem(
+              (entry) => UserInfoItem(
                 label: entry.key,
                 value: entry.value,
               ),
@@ -144,7 +146,9 @@ class _UserInfoCardState extends State<UserInfoCard> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                _showEditDialog(context, widget.title, widget.data);
+                setState(() {
+                  _showEditDialog(context, widget.title, widget.data);
+                });
               },
               child: Text('Edit ${widget.title}'),
             ),
@@ -154,7 +158,12 @@ class _UserInfoCardState extends State<UserInfoCard> {
     );
   }
 
-  void _showEditDialog(BuildContext context, String title, Map<String, String> data) {
+  void _showEditDialog(
+      BuildContext context, String title, Map<String, String> data) {
+    controllers.forEach((key, controller) {
+      controller.text = data[key] ?? '';
+    });
+    List<String> nonEditableFields = ['Username', 'Client ID'];
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -163,7 +172,9 @@ class _UserInfoCardState extends State<UserInfoCard> {
           content: SingleChildScrollView(
             child: Column(
               children: [
-                ...data.entries.map(
+                ...data.entries
+                    .where((entry) => !nonEditableFields.contains(entry.key))
+                    .map(
                       (entry) => UserInfoEditableItem(
                     label: entry.key,
                     controller: controllers[entry.key]!,
@@ -192,12 +203,55 @@ class _UserInfoCardState extends State<UserInfoCard> {
     );
   }
 
-  void applyChanges() {
-    setState(() {
-      widget.data.keys.forEach(
-            (key) => widget.data[key] = controllers[key]!.text,
+  void applyChanges() async {
+    final userId = userData['_id'];
+    final authToken = userToken;
+    print('User Id from update : $userId');
+    try {
+      final Map<String, String> updatedData = {};
+      controllers.forEach((key, controller) {
+        updatedData[mapKey(key)] = controller.text;
+      });
+      print(updatedData);
+      final response = await http.put(
+        Uri.parse('$apiPrefix/users/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: jsonEncode(updatedData),
       );
-    });
+      print(response.body);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User updated successfully'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Optional: Refresh UI or fetch updated data
+        // fetchData('$apiPrefix/users/$userId').then((data) {
+        //   setState(() {
+        //     userData = data['response'];
+        //   });
+        // });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update user: ${response.statusCode}'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $error'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 }
 
@@ -213,20 +267,19 @@ class UserInfoEditableItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          // Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-          // SizedBox(width: 8),
           Expanded(
             child: TextFormFieldWidget(
               controller: controller,
               labelText: label,
               hintText: 'enter your $label',
-              maxLength:100,
+              maxLength: 100,
               keyboardType: TextInputType.text,
               validator: (String value) {
                 if (value.isEmpty) {
                   return 'Email is required';
                 }
-              }, icon: const Icon(null),
+              },
+              icon: const Icon(null),
             ),
           ),
         ],
@@ -253,5 +306,30 @@ class UserInfoItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String mapKey(String uiKey) {
+  switch (uiKey) {
+    case 'First Name':
+      return 'firstName';
+    case 'Last Name':
+      return 'lastName';
+    case 'Birth Date':
+      return 'birthdate';
+    case 'Mobile Number':
+      return 'mobile';
+    case 'Email':
+      return 'email';
+    case 'Gender':
+      return 'gender';
+    case 'Emergency Contact':
+      return 'emergencyContactName';
+    case 'Emergency Contact Number':
+      return 'emergencyContactNumber';
+    case 'Password':
+      return 'password';
+    default:
+      return uiKey;
   }
 }

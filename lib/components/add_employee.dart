@@ -51,6 +51,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
             'clientId': clientIdController.text,
             'emergencyContactName': emergencyContactNameController.text,
             'emergencyContactNumber':emergencyContactNumberController.text,
+            'userName':userNameController.text,
             'password': 'pppppppp'
           }),
         );
@@ -75,12 +76,14 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
         emailController.text.isEmpty ||
+        roleController.text.isEmpty ||
         genderController.text.isEmpty ||
         birthdateController.text.isEmpty ||
         mobileController.text.isEmpty ||
         emergencyContactNameController.text.isEmpty ||
         emergencyContactNumberController.text.isEmpty ||
-        clientIdController.text.isEmpty) {
+        clientIdController.text.isEmpty ||
+        userNameController.text.isEmpty) {
       _showErrorSnackbar('All fields are required');
       return false;
     }
@@ -103,6 +106,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
           mobileController.clear();
           emergencyContactNameController.clear();
           emergencyContactNumberController.clear();
+          userNameController.clear();
           // clientIdController.clear();
         },
       ),

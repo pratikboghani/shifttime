@@ -179,33 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 30.0,
         ),
 
-        Padding(
-          padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-          child: Center(
-            child: Container(
-              width: width * .6,
-              child: TextFormFieldWidget(
-                keyboardType: TextInputType.number,
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Client Id is required';
-                  }
-                },
-                controller:_clientIdController,
 
-                labelText: 'Client Id',
-                hintText: 'enter your client id',
-                icon: const Icon(
-                  Icons.person,
-                  color: clrGreenOriginal,
-                ), maxLength: 100,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
+
         Padding(
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Center(
@@ -258,7 +233,33 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+        const SizedBox(
+          height: 10.0,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+          child: Center(
+            child: Container(
+              width: width * .6,
+              child: TextFormFieldWidget(
+                keyboardType: TextInputType.number,
+                validator: (String value) {
+                  if (value.isEmpty) {
+                    return 'Client Id is required';
+                  }
+                },
+                controller:_clientIdController,
 
+                labelText: 'Client Id',
+                hintText: 'enter your client id',
+                icon: const Icon(
+                  Icons.person,
+                  color: clrGreenOriginal,
+                ), maxLength: 100,
+              ),
+            ),
+          ),
+        ),
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [
