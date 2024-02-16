@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shifttime/utilities/constants.dart';
-import 'package:shifttime/utilities/date_picker.dart';
 import 'package:shifttime/utilities/raised_button_widget.dart';
 import 'package:shifttime/utilities/time_picker.dart';
 
 class AvailabilityForm extends StatefulWidget {
+  const AvailabilityForm({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AvailabilityFormState createState() => _AvailabilityFormState();
 }
 
@@ -28,7 +30,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: const Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
@@ -45,7 +47,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
           // ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () => _showAddAvailabilityPopup(context),child: Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(onPressed: () => _showAddAvailabilityPopup(context),child: const Icon(Icons.add)),
     );
   }
 
@@ -54,7 +56,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -67,7 +69,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Sunday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: sundayTController,
@@ -86,7 +88,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Monday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: mondayTController,
@@ -105,7 +107,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Tuesday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: tuesdayTController,
@@ -124,7 +126,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Wednesday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: wednesdayTController,
@@ -143,7 +145,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Thursday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: thursdayTController,
@@ -162,7 +164,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Friday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: fridayTController,
@@ -181,7 +183,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                         labelText: 'Saturday from',
                       ),
                     ),
-                    Text('To'),
+                    const Text('To'),
                     Expanded(
                       child: TimePicker(
                         controller: saturdayTController,
@@ -193,7 +195,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
                 ),
 
                 // Add similar Rows for other days if needed
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 RaisedButtonWidget(
                   buttonText: 'Save',
                   buttonTextColor: clrWhite,

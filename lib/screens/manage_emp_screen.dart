@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/add_employee.dart';
 import '../components/employee_list.dart';
@@ -32,7 +31,6 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
 
       body: <Widget>[

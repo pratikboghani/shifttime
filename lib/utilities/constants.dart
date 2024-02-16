@@ -119,9 +119,9 @@ final ThemeData mytheme = ThemeData(
 
   datePickerTheme: DatePickerThemeData(
     backgroundColor: clrWhite,
-    headerHelpStyle: TextStyle(color: clrBlack, fontSize: 18.0),
+    headerHelpStyle: const TextStyle(color: clrBlack, fontSize: 18.0),
     shadowColor: clrGreenWhite40,
-    dayStyle: TextStyle(color: clrGreenOriginal),
+    dayStyle: const TextStyle(color: clrGreenOriginal),
     dayBackgroundColor: MaterialStateColor.resolveWith(
           (Set<MaterialState> states) {
         if (states.contains(MaterialState.selected)) {
@@ -133,7 +133,7 @@ final ThemeData mytheme = ThemeData(
         }
       },
     ),
-    weekdayStyle: TextStyle(color: clrBlack, fontWeight: FontWeight.bold),
+    weekdayStyle: const TextStyle(color: clrBlack, fontWeight: FontWeight.bold),
     yearBackgroundColor: MaterialStateColor.resolveWith(
           (Set<MaterialState> states) {
         if (states.contains(MaterialState.selected)) {
@@ -151,13 +151,13 @@ final ThemeData mytheme = ThemeData(
       },
     ),
     rangePickerBackgroundColor: clrGreenOriginal,
-    inputDecorationTheme: InputDecorationTheme(fillColor: clrGreenWhite90),
+    inputDecorationTheme: const InputDecorationTheme(fillColor: clrGreenWhite90),
       headerBackgroundColor: clrGreenWhite70,
     surfaceTintColor: clrGreenWhite40,
   ),
 
 
-  timePickerTheme: TimePickerThemeData(
+  timePickerTheme: const TimePickerThemeData(
     backgroundColor: clrWhite,
     helpTextStyle: TextStyle(color: clrBlack),
     hourMinuteColor: clrGreenWhite40,
@@ -193,7 +193,7 @@ final ThemeData mytheme = ThemeData(
     ),
   ),
   //tabbar
-  tabBarTheme: TabBarTheme(
+  tabBarTheme: const TabBarTheme(
     labelColor: clrGreenOriginal,
     unselectedLabelColor: clrGreenDark60,
     labelStyle: TextStyle(

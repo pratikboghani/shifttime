@@ -10,6 +10,7 @@ class AddEmployeeForm extends StatefulWidget {
   const AddEmployeeForm({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _InsertUserFormState createState() => _InsertUserFormState();
 }
 
@@ -33,7 +34,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
 
   Future<void> insertUser() async {
     if (_validateFields()) {
-      final url = '$apiPrefix/users/signup/';
+      const url = '$apiPrefix/users/signup/';
 
       try {
         final response = await http.post(
@@ -61,15 +62,12 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         if (responseData['type'] == 'SUCCESS') {
-          print('User inserted successfully');
           _showSuccessSnackbar();
         } else {
-          print('Failed to insert user: ${responseData['message']}');
           _showErrorSnackbar(
               'Failed to insert user: ${responseData['message']}');
         }
       } catch (error) {
-        print('Failed to insert user: $error');
         _showErrorSnackbar('Failed to insert user: $error');
       }
     }
@@ -96,9 +94,9 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   void _showSuccessSnackbar() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('User added successfully!'),
+        content: const Text('User added successfully!'),
         backgroundColor: Colors.green,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
         onVisible: () {
           // Clear the fields after the Snackbar is visible
           firstNameController.clear();
@@ -121,7 +119,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
       SnackBar(
         content: Text(errorMessage),
         backgroundColor: Colors.red,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -221,43 +219,41 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 25),
                 child: Center(
-                  child: Container(
-                    child: TextFormField(
-                      onTap: () => onTapFunction(context: context),
-                      keyboardType: TextInputType.text,
-                      controller: birthdateController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black12),
-                          borderRadius: BorderRadius.circular(50.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50.0),
-                          borderSide: BorderSide(color: Color(0xFF83C43E)),
-                        ),
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 20.0),
-                        labelText: 'Birth Date',
-                        labelStyle: TextStyle(
-                          color: Color(0xFF83C43E),
-                          fontFamily: fontFamily,
-                        ),
-                        hintText: 'enter your Birth Date',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12.0,
-                          fontFamily: fontFamily,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        prefixIcon: const Icon(
-                          Icons.date_range,
-                          color: clrGreenOriginal,
-                        ),
+                  child: TextFormField(
+                    onTap: () => onTapFunction(context: context),
+                    keyboardType: TextInputType.text,
+                    controller: birthdateController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(50.0),
                       ),
-                      cursorColor: Color(0xFF83C43E),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50.0),
+                        borderSide: const BorderSide(color: Color(0xFF83C43E)),
+                      ),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 5.0, horizontal: 20.0),
+                      labelText: 'Birth Date',
+                      labelStyle: const TextStyle(
+                        color: Color(0xFF83C43E),
+                        fontFamily: fontFamily,
+                      ),
+                      hintText: 'enter your Birth Date',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12.0,
+                        fontFamily: fontFamily,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      prefixIcon: const Icon(
+                        Icons.date_range,
+                        color: clrGreenOriginal,
+                      ),
                     ),
+                    cursorColor: const Color(0xFF83C43E),
                   ),
                 ),
               ),
@@ -330,7 +326,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 maxLength: 100,
               ),
 
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateColor.resolveWith(
@@ -346,7 +342,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 onPressed: () {
                   insertUser();
                 },
-                child: Text('Insert User'),
+                child: const Text('Insert User'),
               ),
             ],
           ),

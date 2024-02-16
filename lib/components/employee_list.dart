@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
 import 'package:shifttime/utilities/constants.dart';
-
-import '../utilities/getSession.dart';
 
 class EmployeeListPage extends StatefulWidget {
   const EmployeeListPage({Key? key}) : super(key: key);
@@ -35,7 +31,6 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
         userData = List<Map<String, dynamic>>.from(docs);
       });
     } else {
-      print('Failed to fetch data');
     }
   }
 
@@ -55,27 +50,28 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
 class UserCard extends StatelessWidget {
   final Map<String, dynamic> userData;
 
-  UserCard({required this.userData});
+  const UserCard({super.key, required this.userData});
   Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete User'),
-          content: Text('Are you sure you want to delete this user?'),
+          title: const Text('Delete User'),
+          content: const Text('Are you sure you want to delete this user?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
                 await _deleteUser(context);
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -100,7 +96,7 @@ class UserCard extends StatelessWidget {
         // User deleted successfully, you may want to refresh the list
         // You can call fetchData() again or update the state accordingly
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('User deleted successfully'),
             duration: Duration(seconds: 2),
           ),
@@ -109,7 +105,7 @@ class UserCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to delete user: ${response.statusCode}'),
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -117,7 +113,7 @@ class UserCard extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $error'),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -127,7 +123,7 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -135,15 +131,15 @@ class UserCard extends StatelessWidget {
       child: Stack(
         children: [
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   '${userData['firstName']} ${userData['lastName']}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text('Email: ${userData['email']}'),
                 Text('Role: ${userData['role']}'),
                 Text('Gender: ${userData['gender']}'),
@@ -162,14 +158,14 @@ class UserCard extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {
                     // Handle edit action
                     // Open an edit dialog or navigate to an edit screen
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   onPressed: () {
                     _showDeleteConfirmationDialog(context);
                   },

@@ -28,6 +28,7 @@ class TextFormFieldWidget extends StatelessWidget {
       obscureText: obSecureText,
       keyboardType: keyboardType,
       maxLength: maxLength,
+
       maxLines: 1,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -46,7 +47,7 @@ class TextFormFieldWidget extends StatelessWidget {
           fontFamily: fontFamily,
         ),
         hintText: hintText,
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.grey,
           fontSize: 12.0,
           fontFamily: fontFamily,

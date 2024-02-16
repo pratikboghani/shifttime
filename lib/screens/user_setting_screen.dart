@@ -63,8 +63,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     'Gender': userData['gender'] ?? '',
                     'Username': userData['userName'] ?? '',
                     'Birth Date': userData['birthdate'] ?? '',
-                    'Mobile Number': userData['mobile'].toString() ?? '',
-                    'Client ID': userData['clientId'].toString() ?? '',
+                    'Mobile Number': userData['mobile'].toString(),
+                    'Client ID': userData['clientId'].toString(),
                   },
                 ),
                 SizedBox(height: 16),
@@ -72,9 +72,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   title: 'Emergency Information',
                   data: {
                     'Emergency Contact':
-                        userData['emergencyContactName'].toString() ?? '',
+                        userData['emergencyContactName'].toString(),
                     'Emergency Contact Number':
-                        userData['emergencyContactNumber'].toString() ?? '',
+                        userData['emergencyContactNumber'].toString(),
                   },
                 ),
                 SizedBox(height: 16),

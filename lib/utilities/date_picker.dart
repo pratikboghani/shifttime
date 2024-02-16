@@ -16,16 +16,11 @@ class DatePicker extends StatelessWidget {
   onTapFunction({required BuildContext context}) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      lastDate: DateTime.now(),
       firstDate: DateTime(1915),
-      initialDate: DateTime.now(),
+      initialDate: DateTime.now(), lastDate: DateTime(5000),
 
     );
     onTapTimePicker({required BuildContext context}) async {
-      Future<TimeOfDay?> selectedTime = showTimePicker(
-        initialTime: TimeOfDay.now(),
-        context: context,
-      );
     }
     if (pickedDate == null) return;
     controller.text = DateFormat('dd-MM-yyyy').format(pickedDate);
