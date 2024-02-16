@@ -127,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     );
     if (pickedDate == null) return;
-    _fbirthDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+    _fbirthDateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
   }
 
   Widget _buildLoginUI(double width, double height) {

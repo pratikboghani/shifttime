@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'dart:js';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+
+var scrWidth = MediaQuery.of(context as BuildContext).size.width;
+var scrHeight = MediaQuery.of(context as BuildContext).size.height;
 
 const clrGreenOriginal = Color(0xff43a756);
 const clrGreenOriginalLight = Color(0xFFd9eddd);
@@ -45,100 +49,198 @@ const welcomeTextWidget = Text(
 
 const fontFamily = 'Rubik';
 
-final ThemeData mytheme= ThemeData(
-    // Colors
-    primaryColor: clrGreenOriginal,
-    hintColor: clrGreenDark50,
-    scaffoldBackgroundColor: clrWhite, // Customize the error color here
+final ThemeData mytheme = ThemeData(
+  // Colors
+  primaryColor: clrGreenOriginal,
+  hintColor: clrGreenDark50,
+  scaffoldBackgroundColor: clrWhite,
+  // Customize the error color here
 
-    // Typography
-    textTheme: const TextTheme(
+  // Typography
+  textTheme: const TextTheme(
     bodyLarge: TextStyle(color: clrGreenOriginal),
     bodyMedium: TextStyle(color: clrGreenDark50),
     titleLarge: TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
 
     // Customize more text styles as needed
-    ),
-    appBarTheme: const AppBarTheme(
+  ),
+  appBarTheme: const AppBarTheme(
     backgroundColor: clrGreenOriginal,
     foregroundColor: clrWhite,
     titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    ),
+  ),
 
-    // Buttons
-    buttonTheme: const ButtonThemeData(
+  // Buttons
+  buttonTheme: const ButtonThemeData(
     buttonColor: clrGreenOriginal,
     textTheme: ButtonTextTheme.primary,
-    ),
+  ),
 
-    // Input decoration
-    inputDecorationTheme: const InputDecorationTheme(
-    fillColor: clrGreenWhite10,
-    filled: true,
+  // Input decoration
+  inputDecorationTheme: InputDecorationTheme(
+    // fillColor: clrGreenWhite90,
+    // filled: false,
+    // focusedBorder: OutlineInputBorder(
+    //   borderSide: BorderSide(color: clrBlack),
+    // ),
+    // border: OutlineInputBorder(
+    //   borderSide: BorderSide(color: clrGreenOriginal),
+    // ),
+    // enabledBorder: OutlineInputBorder(
+    //   borderSide: BorderSide(color: clrGreenOriginal),
+    // ),
+    // errorBorder: OutlineInputBorder(
+    //   borderSide: BorderSide(color: Colors.red),
+    // ),
+    // hintStyle: TextStyle(color: Colors.black),
+    border: OutlineInputBorder(
+      borderSide: const BorderSide(color: Colors.black12),
+      borderRadius: BorderRadius.circular(50.0),
+    ),
     focusedBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: clrGreenOriginal),
+      borderRadius: BorderRadius.circular(50.0),
+      borderSide: const BorderSide(color: Color(0xFF83C43E)),
     ),
-    enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: clrGreenOriginalLight),
+    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+    labelStyle: const TextStyle(
+      color: Color(0xFF83C43E),
+      fontFamily: fontFamily,
     ),
-    errorBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.red),
+    hintStyle: const TextStyle(
+      color: Colors.grey,
+      fontSize: 12.0,
+      fontFamily: fontFamily,
     ),
-    // Customize more input decoration properties as needed
+    filled: true,
+    fillColor: Colors.white,
+  ),
+  checkboxTheme: CheckboxThemeData(
+    fillColor: MaterialStateColor.resolveWith(
+      (states) => clrGreenOriginal,
     ),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(
+      primary: clrGreenOriginal,
+    ),
+  ),
 
-    // Dialogs
-    dialogTheme: DialogTheme(
+
+  datePickerTheme: DatePickerThemeData(
     backgroundColor: clrWhite,
-    titleTextStyle: const TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
+    headerHelpStyle: TextStyle(color: clrBlack, fontSize: 18.0),
+    shadowColor: clrGreenWhite40,
+    dayStyle: TextStyle(color: clrGreenOriginal),
+    dayBackgroundColor: MaterialStateColor.resolveWith(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return clrGreenOriginal;
+        } else if (states.contains(MaterialState.hovered)) {
+          return clrGreenOriginal.withOpacity(0.9);
+        } else {
+          return clrGreenWhite90;
+        }
+      },
+    ),
+    weekdayStyle: TextStyle(color: clrBlack, fontWeight: FontWeight.bold),
+    yearBackgroundColor: MaterialStateColor.resolveWith(
+          (Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return clrGreenOriginal;
+        } else if (states.contains(MaterialState.hovered)) {
+          return clrGreenOriginal.withOpacity(0.9);
+        } else {
+          return clrGreenWhite90;
+        }
+      },
+    ),
+    todayBackgroundColor: MaterialStateColor.resolveWith(
+          (Set<MaterialState> states) {
+          return clrGreenWhite30;
+      },
+    ),
+    rangePickerBackgroundColor: clrGreenOriginal,
+    inputDecorationTheme: InputDecorationTheme(fillColor: clrGreenWhite90),
+      headerBackgroundColor: clrGreenWhite70,
+    surfaceTintColor: clrGreenWhite40,
+  ),
+
+
+  timePickerTheme: TimePickerThemeData(
+    backgroundColor: clrWhite,
+    helpTextStyle: TextStyle(color: clrBlack),
+    hourMinuteColor: clrGreenWhite40,
+    dayPeriodTextStyle: TextStyle(color: clrWhite),
+    dialHandColor: clrGreenWhite40,
+    dialTextColor: clrBlack,
+    entryModeIconColor: clrGreenOriginal,
+    hourMinuteTextStyle: TextStyle(color: clrWhite),
+  ),
+  // Dialogs
+  dialogTheme: DialogTheme(
+    backgroundColor: clrWhite,
+    titleTextStyle:
+        const TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
     contentTextStyle: const TextStyle(color: clrGreenDark50),
     shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16),
     ),
-    ),
+  ),
 
-    // Snackbars
-    snackBarTheme: const SnackBarThemeData(
+  // Snackbars
+  snackBarTheme: const SnackBarThemeData(
     backgroundColor: Colors.red,
     contentTextStyle: TextStyle(color: clrWhite),
-    ),
+  ),
 
-    // Card
-    cardTheme: CardTheme(
+  // Card
+  cardTheme: CardTheme(
     color: clrGreenWhite90,
     elevation: 4,
     shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16),
     ),
+  ),
+  //tabbar
+  tabBarTheme: TabBarTheme(
+    labelColor: clrGreenOriginal,
+    unselectedLabelColor: clrGreenDark60,
+    labelStyle: TextStyle(
+      fontWeight: FontWeight.bold,
     ),
-
-    // Bottom Navigation Bar
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    indicator: UnderlineTabIndicator(
+      borderSide: BorderSide(width: 4, color: clrGreenOriginal),
+    ),
+  ),
+  // Bottom Navigation Bar
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: clrGreenOriginal,
     selectedItemColor: clrWhite,
     unselectedItemColor: clrGreenDark50,
-    ),
+  ),
 
-    listTileTheme: const ListTileThemeData(textColor: clrBlack, selectedColor: clrGreenOriginal),
-    // Divider
-    dividerTheme: const DividerThemeData(
+  listTileTheme: const ListTileThemeData(
+      textColor: clrBlack, selectedColor: clrGreenOriginal),
+  // Divider
+  dividerTheme: const DividerThemeData(
     color: clrGreenDark30,
     space: 16,
     thickness: 1,
-    ),
+  ),
 
-    // Toggle Buttons
-    toggleButtonsTheme: ToggleButtonsThemeData(
+  // Toggle Buttons
+  toggleButtonsTheme: ToggleButtonsThemeData(
     color: clrGreenDark50,
     selectedColor: clrGreenOriginal,
     fillColor: clrGreenWhite10,
     borderRadius: BorderRadius.circular(8),
     borderWidth: 1,
-    ),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) {
+        (Set<MaterialState> states) {
           if (states.contains(MaterialState.hovered)) {
             return clrGreenWhite90; // Hover color
           }
@@ -147,14 +249,14 @@ final ThemeData mytheme= ThemeData(
       ),
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0), // Border radius for the button
+          borderRadius:
+              BorderRadius.circular(8.0), // Border radius for the button
         ),
       ),
     ),
   ),
-
-
 );
+
 Future<Map<String, dynamic>> fetchData(String apiUrl) async {
   final response = await http.get(Uri.parse(apiUrl));
 
@@ -167,5 +269,6 @@ Future<Map<String, dynamic>> fetchData(String apiUrl) async {
 
 // session variables
 var userToken;
-var userRole ;
+var userRole;
+
 var userId;

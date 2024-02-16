@@ -131,7 +131,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
 
     );
     if (pickedDate == null) return;
-    birthdateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+    birthdateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
   }
 
   @override

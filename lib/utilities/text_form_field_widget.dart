@@ -4,14 +4,14 @@ import 'constants.dart';
 
 class TextFormFieldWidget extends StatelessWidget {
   TextFormFieldWidget(
-      {
-      required this.labelText,
-        required this.hintText,
-        required this.icon,
-        required this.keyboardType,
-        required this.validator,
-        required this.controller,
-        this.obSecureText = false, required this.maxLength});
+      {required this.labelText,
+      required this.hintText,
+      required this.icon,
+      required this.keyboardType,
+      required this.validator,
+      required this.controller,
+      this.obSecureText = false,
+      required this.maxLength});
 
   final int maxLength;
   final String labelText, hintText;
@@ -20,10 +20,10 @@ class TextFormFieldWidget extends StatelessWidget {
   final Function validator;
   final bool obSecureText;
   final TextEditingController controller;
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-
       controller: controller,
       obscureText: obSecureText,
       keyboardType: keyboardType,
