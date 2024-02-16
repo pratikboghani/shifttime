@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/add_categories_form.dart';
 import '../utilities/constants.dart';
 import 'admin_schedule_screen.dart';
 import 'manage_emp_screen.dart';
@@ -38,6 +39,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     ),
     ScheduleManageScreen(),
     ManageEmpScreen(),
+    CategoryForm(),
     Text(
       'Index 3: Settings',
       style: optionStyle,
@@ -115,11 +117,21 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Settings'),
+              title: const Text('Manage Categories'),
               selected: _selectedIndex == 3,
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(3);
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Settings'),
+              selected: _selectedIndex == 4,
+              onTap: () {
+                // Update the state of the app
+                _onItemTapped(4);
 
                 // Then close the drawer
                 Navigator.pop(context);

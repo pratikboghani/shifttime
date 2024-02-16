@@ -191,8 +191,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     return 'Email is required';
                   }
                 },
-
-
                 controller: _emailController,
                 labelText: 'Email',
                 hintText: 'enter your email',
