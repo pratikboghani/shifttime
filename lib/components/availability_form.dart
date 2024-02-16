@@ -10,13 +10,6 @@ class AvailabilityForm extends StatefulWidget {
 }
 
 class _AvailabilityFormState extends State<AvailabilityForm> {
-  bool _mondayChecked = true;
-  bool _tuesdayChecked = true;
-  bool _wednesdayChecked = true;
-  bool _thursdayChecked = true;
-  bool _fridayChecked = true;
-  bool _saturdayChecked = true;
-  bool _sundayChecked = true;
   final TextEditingController sundayFController = TextEditingController();
   final TextEditingController sundayTController = TextEditingController();
   final TextEditingController mondayFController = TextEditingController();
@@ -36,21 +29,23 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: double.infinity,),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: RaisedButtonWidget(
-              bgColor: clrGreenOriginal,
-              buttonText: 'Add Availability',
-              buttonTextColor: clrWhite,
-              onPressed: () => _showAddAvailabilityPopup(context),
-            ),
+          SizedBox(
+            width: double.infinity,
           ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: RaisedButtonWidget(
+          //     bgColor: clrGreenOriginal,
+          //     buttonText: 'Add Availability',
+          //     buttonTextColor: clrWhite,
+          //     onPressed: () => _showAddAvailabilityPopup(context),
+          //   ),
+          // ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(onPressed: () => _showAddAvailabilityPopup(context),child: Icon(Icons.add)),
     );
   }
 
@@ -60,63 +55,162 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
       builder: (BuildContext context) {
         return Container(
           padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  _buildDayCheckbox('Sunday', _sundayChecked),
-                  Expanded(
-                    child: TimePicker(
-                      controller: sundayFController,
-                      hintText: 'From',
-                      labelText: 'Sunday from',
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: sundayFController,
+                        hintText: 'From',
+                        labelText: 'Sunday from',
+                      ),
                     ),
-                  ),
-                  Text('To'),
-                  Expanded(
-                    child: TimePicker(
-                      controller: sundayTController,
-                      hintText: 'To',
-                      labelText: 'Sunday to',
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: sundayTController,
+                        hintText: 'To',
+                        labelText: 'Sunday to',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              // Add similar Rows for other days if needed
-              SizedBox(height: 16),
-              RaisedButtonWidget(
-                buttonText: 'Save',
-                buttonTextColor: clrWhite,
-                bgColor: clrGreenOriginal,
-                onPressed: () {
-                  // Handle the button press in the popup
-                  // For example, you can save the selected availability
-                  // and then close the popup
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: mondayFController,
+                        hintText: 'From',
+                        labelText: 'Monday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: mondayTController,
+                        hintText: 'To',
+                        labelText: 'Monday to',
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: tuesdayFController,
+                        hintText: 'From',
+                        labelText: 'Tuesday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: tuesdayTController,
+                        hintText: 'To',
+                        labelText: 'Tuesday to',
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: wednesdayFController,
+                        hintText: 'From',
+                        labelText: 'Wednesday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: wednesdayTController,
+                        hintText: 'To',
+                        labelText: 'Wednesday to',
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: thursdayFController,
+                        hintText: 'From',
+                        labelText: 'Thursday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: thursdayTController,
+                        hintText: 'To',
+                        labelText: 'Thursday to',
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: fridayFController,
+                        hintText: 'From',
+                        labelText: 'Friday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: fridayTController,
+                        hintText: 'To',
+                        labelText: 'Friday to',
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TimePicker(
+                        controller: saturdayFController,
+                        hintText: 'From',
+                        labelText: 'Saturday from',
+                      ),
+                    ),
+                    Text('To'),
+                    Expanded(
+                      child: TimePicker(
+                        controller: saturdayTController,
+                        hintText: 'To',
+                        labelText: 'Saturday to',
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Add similar Rows for other days if needed
+                SizedBox(height: 16),
+                RaisedButtonWidget(
+                  buttonText: 'Save',
+                  buttonTextColor: clrWhite,
+                  bgColor: clrGreenOriginal,
+                  onPressed: () {
+
+
+
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
     );
   }
-
-  Widget _buildDayCheckbox(String day, bool checked) {
-    return Row(
-      children: [
-        Checkbox(
-          value: checked,
-          onChanged: (newValue) {
-            setState(() {
-              if (day == 'Sunday') {
-                _sundayChecked = newValue!;
-              }
-            });
-          },
-        ),
-        Text(day),
-      ],
-    );
-  }
 }
+

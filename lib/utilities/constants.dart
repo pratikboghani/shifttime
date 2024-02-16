@@ -61,15 +61,20 @@ final ThemeData mytheme = ThemeData(
     bodyLarge: TextStyle(color: clrGreenOriginal),
     bodyMedium: TextStyle(color: clrGreenDark50),
     titleLarge: TextStyle(color: clrGreenOriginal, fontWeight: FontWeight.bold),
-
-    // Customize more text styles as needed
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: clrGreenOriginal,
     foregroundColor: clrWhite,
     titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
   ),
-
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: clrGreenOriginal,
+    foregroundColor: Colors.white,
+    focusColor: clrGreenDark40,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50),
+    ),
+  ),
   // Buttons
   buttonTheme: const ButtonThemeData(
     buttonColor: clrGreenOriginal,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shifttime/components/bookoff_form.dart';
 import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/availability_form.dart';
@@ -100,7 +101,7 @@ class _NavigationState extends State<Navigation> {
               ),
               Expanded(
                   child: TabBarView(
-                      children: [Text('Schedule'), Text('Book offs'), AvailabilityForm()])),
+                      children: [Text('Schedule'), BookoffForm(), AvailabilityForm()])),
             ],
           ),
         ),
