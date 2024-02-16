@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utilities/constants.dart';
+import 'admin_schedule_screen.dart';
 import 'manage_emp_screen.dart';
 
 void main() => runApp(const AdminHomeScreen());
@@ -35,10 +36,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       'Index 0: Home',
       style: optionStyle,
     ),
-    Text(
-      'Index 1: Schedule',
-      style: optionStyle,
-    ),
+    ScheduleManageScreen(),
     ManageEmpScreen(),
     Text(
       'Index 3: Settings',
