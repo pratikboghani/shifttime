@@ -17,17 +17,19 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController roleController = TextEditingController(text: 'EMPLOYEE');
+  final TextEditingController roleController =
+      TextEditingController(text: 'EMPLOYEE');
   final TextEditingController genderController = TextEditingController();
   final TextEditingController birthdateController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emergencyContactNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController emergencyContactNumberController =
-  TextEditingController();
+      TextEditingController();
   String selectedValue = "USA";
-  final TextEditingController clientIdController = TextEditingController(text: '1001');
+  final TextEditingController clientIdController =
+      TextEditingController(text: '1001');
 
   Future<void> insertUser() async {
     if (_validateFields()) {
@@ -50,8 +52,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
             'mobile': mobileController.text,
             'clientId': clientIdController.text,
             'emergencyContactName': emergencyContactNameController.text,
-            'emergencyContactNumber':emergencyContactNumberController.text,
-            'userName':userNameController.text,
+            'emergencyContactNumber': emergencyContactNumberController.text,
+            'userName': userNameController.text,
             'password': 'pppppppp'
           }),
         );
@@ -63,7 +65,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
           _showSuccessSnackbar();
         } else {
           print('Failed to insert user: ${responseData['message']}');
-          _showErrorSnackbar('Failed to insert user: ${responseData['message']}');
+          _showErrorSnackbar(
+              'Failed to insert user: ${responseData['message']}');
         }
       } catch (error) {
         print('Failed to insert user: $error');
@@ -122,13 +125,13 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
       ),
     );
   }
+
   onTapFunction({required BuildContext context}) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       lastDate: DateTime.now(),
       firstDate: DateTime(1915),
       initialDate: DateTime.now(),
-
     );
     if (pickedDate == null) return;
     birthdateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
@@ -137,7 +140,6 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -158,7 +160,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.person,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -174,7 +177,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.person,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -190,7 +194,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.email_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -206,7 +211,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.male_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               // DropdownButton(
               //     value: selectedValue,
@@ -216,13 +222,11 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 padding: const EdgeInsets.only(bottom: 25),
                 child: Center(
                   child: Container(
-          
                     child: TextFormField(
                       onTap: () => onTapFunction(context: context),
                       keyboardType: TextInputType.text,
                       controller: birthdateController,
                       decoration: InputDecoration(
-          
                         border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.black12),
                           borderRadius: BorderRadius.circular(50.0),
@@ -232,13 +236,14 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                           borderSide: BorderSide(color: Color(0xFF83C43E)),
                         ),
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 20.0),
                         labelText: 'Birth Date',
                         labelStyle: TextStyle(
                           color: Color(0xFF83C43E),
                           fontFamily: fontFamily,
                         ),
-                        hintText:  'enter your Birth Date',
+                        hintText: 'enter your Birth Date',
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 12.0,
@@ -252,7 +257,6 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                         ),
                       ),
                       cursorColor: Color(0xFF83C43E),
-          
                     ),
                   ),
                 ),
@@ -271,7 +275,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.phone,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -287,7 +292,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.contact_emergency_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -303,7 +309,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.contact_emergency_rounded,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
               TextFormFieldWidget(
                 obSecureText: false,
@@ -319,13 +326,23 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 icon: const Icon(
                   Icons.person,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
-          
-          
-              // Add more TextFields for additional fields
+
               SizedBox(height: 16),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateColor.resolveWith(
+                      (Set<MaterialState> states) {
+                    return clrGreenWhite60;
+                  }),
+                  foregroundColor: MaterialStateColor.resolveWith(
+                        (Set<MaterialState> states) {
+                      return clrBlack;
+                    },
+                  ),
+                ),
                 onPressed: () {
                   insertUser();
                 },

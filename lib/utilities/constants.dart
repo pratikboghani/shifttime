@@ -78,21 +78,6 @@ final ThemeData mytheme = ThemeData(
 
   // Input decoration
   inputDecorationTheme: InputDecorationTheme(
-    // fillColor: clrGreenWhite90,
-    // filled: false,
-    // focusedBorder: OutlineInputBorder(
-    //   borderSide: BorderSide(color: clrBlack),
-    // ),
-    // border: OutlineInputBorder(
-    //   borderSide: BorderSide(color: clrGreenOriginal),
-    // ),
-    // enabledBorder: OutlineInputBorder(
-    //   borderSide: BorderSide(color: clrGreenOriginal),
-    // ),
-    // errorBorder: OutlineInputBorder(
-    //   borderSide: BorderSide(color: Colors.red),
-    // ),
-    // hintStyle: TextStyle(color: Colors.black),
     border: OutlineInputBorder(
       borderSide: const BorderSide(color: Colors.black12),
       borderRadius: BorderRadius.circular(50.0),
@@ -122,7 +107,7 @@ final ThemeData mytheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      primary: clrGreenOriginal,
+      foregroundColor: clrGreenOriginal,
     ),
   ),
 
