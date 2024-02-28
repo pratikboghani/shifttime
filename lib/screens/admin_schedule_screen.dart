@@ -18,10 +18,13 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
   List<Employee> employees = [];
   String? selectedEmployee;
 
+  // Map to store fixed random color for each employee
+  final Map<String, Color> employeeColors = {};
+
   @override
   void initState() {
     super.initState();
-    _appointments = _getAppointments();
+    _appointments = _getAppointments(employees);
     _fetchEmployees();
   }
 
@@ -35,6 +38,12 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
 
       setState(() {
         employees = docs.map((json) => Employee.fromJson(json)).toList();
+
+        // Generate and store fixed random color for each employee
+        for (Employee employee in employees) {
+          employeeColors[employee.userName] =
+              _generateFixedRandomColor(employee.userName.hashCode);
+        }
       });
     } else {
       // Handle error response
@@ -43,26 +52,33 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
     }
   }
 
-  List<Appointment> _getAppointments() {
-    // Simulated data for appointments
-    return [
-      Appointment(
+  List<Appointment> _getAppointments(List<Employee> employees) {
+    return employees.map((employee) {
+      final Color backgroundColor = employeeColors[employee.userName] ?? Colors.grey;
+      final bool isLightColor = _isLightColor(backgroundColor);
+      final Color textColor = isLightColor ? Colors.black : Colors.white;
+
+      return Appointment(
         startTime: DateTime.now().subtract(Duration(days: 1)),
         endTime: DateTime.now().subtract(Duration(days: 1)),
-        subject: 'Meeting 1',
-        color: Colors.grey,
-      ),
-      Appointment(
-        startTime: DateTime.now().add(Duration(hours: 1)),
-        endTime: DateTime.now().add(Duration(hours: 2)),
-        subject: 'Meeting 2',
-        color: Colors.grey,
-      ),
-    ];
+        subject: '${employee.userName}',
+        color: backgroundColor,
+        notes: textColor.toString(), // Store text color in notes
+      );
+    }).toList();
   }
+
+  bool _isLightColor(Color color) {
+    // A simple heuristic to determine if the color is light or dark
+    final luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+    return luminance > 0.5;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Row(
         children: [
@@ -88,14 +104,19 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
               timeSlotViewSettings: TimeSlotViewSettings(
                 timeInterval: Duration(hours: 1),
               ),
+              viewHeaderStyle: ViewHeaderStyle(
+                dayTextStyle: TextStyle(color: Colors.black), // Set text color for day headers
+                dateTextStyle: TextStyle(color: Colors.black), // Set text color for date headers
+              ),
+              appointmentTextStyle: TextStyle(color: Colors.black), // Set text color for appointment text
               onTap: (CalendarTapDetails details) {
                 // Handle tap on the calendar cells here
-                if (details.targetElement == CalendarElement.calendarCell &&
-                    details.date != null) {
+                if (details.targetElement == CalendarElement.calendarCell && details.date != null) {
                   // Create a new appointment when tapped on the calendar cell
                   _addAppointment(details.date!, selectedEmployee ?? '');
                 }
               },
+
             ),
           ),
         ],
@@ -104,35 +125,38 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
   }
 
   Widget _buildEmployeeButton(Employee employee) {
-    // Generate a random color for each employee
-    final Color randomColor = Color((Random().nextDouble() * 0xFFFFFF).toInt())
-        .withOpacity(1.0);
+    final Color color = employeeColors[employee.userName] ?? Colors.grey;
+    final bool isSelected = selectedEmployee == employee.userName;
 
     return GestureDetector(
       onTap: () {
-        // Set the selected employee when an employee button is tapped
         setState(() {
           selectedEmployee = employee.userName;
         });
       },
       child: Container(
-        width: 60,
-        height: 60,
+        width: 64, // Increased width to accommodate the border
+        height: 64, // Increased height to accommodate the border
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: selectedEmployee == employee.userName
-              ? Colors.blue // Highlight selected employee
-              : randomColor, // Assign a random color to the employee
+          border: Border.all(
+            color: isSelected ? Colors.blue : Colors.transparent,
+            width: isSelected ? 4.0 : 0.0, // Larger border for selected employee
+          ),
         ),
-        child: Center(
-          child: Text(
-            employee.userName[0],
-            style: TextStyle(
-              color: selectedEmployee == employee.userName
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 18,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: Center(
+            child: Text(
+              employee.userName[0],
+              style: TextStyle(
+                color: isSelected ? Colors.black : Colors.white, // Adjusted text color
+                fontSize: 18,
+              ),
             ),
           ),
         ),
@@ -140,22 +164,37 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
     );
   }
 
+
   _getCalendarDataSource() {
     return AppointmentDataSource(appointments: _appointments);
   }
 
   _addAppointment(DateTime date, String employeeName) {
+    // Use the fixed random color for the employee in appointments
+    final Color color = employeeColors[employeeName] ?? Colors.grey;
+
     // Add a new appointment to the calendar
     setState(() {
       _appointments.add(
         Appointment(
           startTime: date,
           endTime: date.add(Duration(hours: 1)),
-          subject: 'Meeting with $employeeName',
-          color: Colors.grey, // You can customize the color as needed
+          subject: '$employeeName',
+          color: color, // Use the fixed random color for the employee
         ),
       );
     });
+  }
+
+  // Generate a fixed random color based on the hash code
+  Color _generateFixedRandomColor(int hashCode) {
+    final Random random = Random(hashCode);
+    return Color.fromARGB(
+      255,
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
   }
 }
 
