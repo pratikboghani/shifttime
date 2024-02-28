@@ -50,7 +50,7 @@ class _NavigationState extends State<Navigation> {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Text(
-              'Pratik',
+              firstName?? 'Guest',
               style: TextStyle(
                 color: clrWhite,
                 fontSize: 20,

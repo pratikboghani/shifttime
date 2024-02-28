@@ -260,5 +260,6 @@ Future<Map<String, dynamic>> fetchData(String apiUrl) async {
 // session variables
 var userToken;
 var userRole;
-
+var clientId;
 var userId;
+var firstName;

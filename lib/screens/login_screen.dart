@@ -88,14 +88,16 @@ class _LoginScreenState extends State<LoginScreen> {
           userToken = responseData['response']['token'];
           userRole = responseData['response']['user']['role'];
           userId= responseData['response']['user']['_id'];
+          clientId =responseData['response']['user']['clientId'].toString();
+          firstName =responseData['response']['user']['firstName'];
+          await setSession('userToken', userToken);
+          await setSession('userRole', userRole);
+          await setSession('clientId', clientId);
+          await setSession('firstName', firstName);
 
-        await setSession('userToken', userToken);
-        await setSession('userRole', userRole);
         String data = await loadSession('userToken');
         String userRoleData = await loadSession('userRole');
 
-        print('Token: $data');
-        print('userRoleData: $userRoleData');
         if(userRoleData == "EMPLOYEE"){
           Navigator.push(
             context,
@@ -176,9 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(
           height: 30.0,
         ),
-
-
-
         Padding(
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Center(
@@ -298,6 +297,10 @@ class _LoginScreenState extends State<LoginScreen> {
             RaisedButtonWidget(
               buttonText: 'Log In admin',
               onPressed: () async {
+                setState(() {
+                  clientId='1001';
+                  firstName='Pratik';
+                });
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
@@ -309,6 +312,10 @@ class _LoginScreenState extends State<LoginScreen> {
             RaisedButtonWidget(
               buttonText: 'Log In user',
               onPressed: () async {
+setState(() {
+  clientId='1001';
+  firstName='Pratik';
+});
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const UserHomeScreen()),

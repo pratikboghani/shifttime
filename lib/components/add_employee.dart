@@ -5,14 +5,13 @@ import 'dart:convert';
 
 import '../utilities/constants.dart';
 import '../utilities/text_form_field_widget.dart';
-
 class AddEmployeeForm extends StatefulWidget {
   const AddEmployeeForm({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _InsertUserFormState createState() => _InsertUserFormState();
 }
+
 
 class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController firstNameController = TextEditingController();
@@ -24,6 +23,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController birthdateController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
+  // final TextEditingController categoryController = TextEditingController();
+
   final TextEditingController emergencyContactNameController =
       TextEditingController();
   final TextEditingController emergencyContactNumberController =
@@ -31,6 +32,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   String selectedValue = "USA";
   final TextEditingController clientIdController =
       TextEditingController(text: '1001');
+  List<String> categories = [];
+  String selectedCategory = '';
 
   Future<void> insertUser() async {
     if (_validateFields()) {
@@ -55,7 +58,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
             'emergencyContactName': emergencyContactNameController.text,
             'emergencyContactNumber': emergencyContactNumberController.text,
             'userName': userNameController.text,
-            'password': 'pppppppp'
+            'password': 'pppppppp',
+            'category':selectedCategory
           }),
         );
 
@@ -84,7 +88,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
         emergencyContactNameController.text.isEmpty ||
         emergencyContactNumberController.text.isEmpty ||
         clientIdController.text.isEmpty ||
-        userNameController.text.isEmpty) {
+        userNameController.text.isEmpty||
+    selectedCategory.length==0) {
       _showErrorSnackbar('All fields are required');
       return false;
     }
@@ -108,6 +113,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
           emergencyContactNameController.clear();
           emergencyContactNumberController.clear();
           userNameController.clear();
+          selectedCategory='';
           // clientIdController.clear();
         },
       ),
@@ -135,6 +141,36 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
     birthdateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
   }
 
+  Future<void> _fetchCategories() async {
+    String apiUrl = '$apiPrefix/category?query={"clientId": $clientId}';
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> docs = responseData['response']['docs'];
+
+        setState(() {
+          categories = docs.map<String>((category) => category['category'].toString()).toList();
+          // if (categories.isNotEmpty) {
+          //   selectedCategory = categories[0];
+          // }
+        });
+      } else {
+        // Handle error response
+        print('Failed to fetch categories. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (error) {
+      // Handle network error
+      print('Error fetching categories: $error');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,10 +248,6 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 ),
                 maxLength: 100,
               ),
-              // DropdownButton(
-              //     value: selectedValue,
-              //     items: dropdownItems, onChanged: (String? value) {  },
-              // ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 25),
                 child: Center(
@@ -325,7 +357,30 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                 ),
                 maxLength: 100,
               ),
-
+              DropdownButtonFormField<String>(
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      selectedCategory = newValue;
+                    });
+                  }
+                },
+                items: categories.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  hintText: 'Select category',
+                  labelText: 'Category',
+                  prefixIcon: Icon(
+                    Icons.category,
+                    color: clrGreenOriginal,
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 style: ButtonStyle(
