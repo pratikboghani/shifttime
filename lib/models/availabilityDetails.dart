@@ -10,7 +10,6 @@ class AvailabilityDetails {
     required this.endTime,
     required this.availabilityType,
   });
-
   Map<String, String> toJson() {
     return {
       'day_of_week': dayOfWeek,
