@@ -147,6 +147,8 @@ class UserCard extends StatelessWidget {
                 Text('mobile: ${userData['mobile']}'),
                 Text('clientId: ${userData['clientId']}'),
                 Text('password: ${userData['password']}'),
+                Text('Category: ${userData['category']}'),
+
                 // Text('_id: ${userData['_id']}'),
 
               ],

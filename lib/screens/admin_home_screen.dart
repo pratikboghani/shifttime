@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/add_categories_form.dart';
 import '../utilities/constants.dart';
+import 'admin_availability_manage.dart';
 import 'admin_schedule_screen.dart';
+import 'admin_setting_screen.dart';
 import 'manage_emp_screen.dart';
 
 void main() => runApp(const AdminHomeScreen());
@@ -32,7 +35,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static  List<Widget> _widgetOptions = <Widget>[
     Text(
       'Index 0: Home',
       style: optionStyle,
@@ -40,10 +43,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
     ScheduleManageScreen(),
     ManageEmpScreen(),
     CategoryForm(),
-    Text(
-      'Index 3: Settings',
-      style: optionStyle,
-    ),
+    ManageAvailability(),
+    AdminSettingScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -84,7 +85,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               decoration: BoxDecoration(
                 color: clrGreenOriginal,
               ),
-              child: Text('Welcome Admin', style: TextStyle(color: clrWhite),),
+              child: Text('Admin', style: TextStyle(color: clrWhite),),
             ),
             ListTile(
               title: const Text('Home'),
@@ -127,11 +128,22 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Settings'),
+              title: const Text('Manage Availability'),
               selected: _selectedIndex == 4,
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(4);
+
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Settings'),
+              selected: _selectedIndex == 5,
+              onTap: () {
+                // Update the state of the app
+                _onItemTapped(5);
 
                 // Then close the drawer
                 Navigator.pop(context);

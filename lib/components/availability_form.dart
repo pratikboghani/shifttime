@@ -108,8 +108,6 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
       },
       body: jsonEncode(requestBody),
     );
-print(requestBody);
-print(response.body);
     if (response.statusCode == 200) {
       // Successfully saved
       _showSnackbar('Availability saved successfully', Colors.green);
@@ -158,15 +156,18 @@ print(response.body);
             SizedBox(
               width: double.infinity,
             ),
-        
+
             Column(
               children: availabilityList.map((availability) {
+                bool isApproved = availability['isApproved'];
                 return Card(
                   margin: const EdgeInsets.all(16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 4,
+
+                  color: isApproved ? clrGreenWhite90 : Colors.red.shade50, // Change color based on approval status
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Table(
@@ -181,8 +182,11 @@ print(response.body);
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
-                                'Approved: ${availability['isApproved']}',
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                isApproved ? 'Approved' : 'Approval Pending',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             Container(), // Empty cell to align with the start_time column
@@ -196,7 +200,6 @@ print(response.body);
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Text(
                                   '${availability['availibilityDetails'][i]['day_of_week']}',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                               ),
                               Padding(
@@ -213,13 +216,6 @@ print(response.body);
                     ),
                   ),
                 );
-        
-                // return ListTile(
-                //   title: Text('Approved: ${availability['isApproved']}'),
-                //   subtitle: Text(
-                //     '${availability['availibilityDetails'][0]['day_of_week']}: ${availability['availibilityDetails'][0]['start_time']} to ${availability['availibilityDetails'][0]['end_time']}',
-                //   ),
-                // );
               }).toList(),
             ),
         

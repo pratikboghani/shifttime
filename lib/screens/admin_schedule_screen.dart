@@ -20,12 +20,33 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
 
   // Map to store fixed random color for each employee
   final Map<String, Color> employeeColors = {};
-
+  List<Map<String, dynamic>> userData = []; // Assuming userData is a list of category data
+  String? selectedCategory;
   @override
   void initState() {
     super.initState();
     _appointments = _getAppointments(employees);
     _fetchEmployees();
+    _fetchCategories();
+  }
+  Future<void> _fetchCategories() async {
+    String apiUrl = '$apiPrefix/category/?query={"clientId": $clientId}';
+    final response = await http.get(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> docs = responseData['response']['docs'];
+      setState(() {
+        userData = List<Map<String, dynamic>>.from(docs);
+      });
+    } else {}
+  }
+  List<Employee> _getFilteredEmployees() {
+    if (selectedCategory == null || selectedCategory == "All") {
+      return employees;
+    } else {
+      // Filter employees based on selected category
+      return employees.where((employee) => employee.category == selectedCategory).toList();
+    }
   }
 
   Future<void> _fetchEmployees() async {
@@ -80,43 +101,98 @@ class _ScheduleManageScreenState extends State<ScheduleManageScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      body: Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Left side column with employee information
-          Container(
-            width: 80,
-            color: Colors.grey[200],
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (Employee employee in employees)
-                  _buildEmployeeButton(employee),
+          Row(children: [Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<String>(
+              value: selectedCategory ?? "All",
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedCategory = newValue;
+                });
+              },
+              items: [
+                DropdownMenuItem<String>(
+                  value: "All",
+                  child: Text("All"),
+                ),
+                for (Map<String, dynamic> category in userData)
+                  DropdownMenuItem<String>(
+                    value: category['category'],
+                    child: Text(category['category']),
+                  ),
               ],
             ),
-          ),
-          // Calendar view
+          ),],),
           Expanded(
-            child: SfCalendar(
-              view: CalendarView.week,
-              allowDragAndDrop: true,
-              allowAppointmentResize: true,
-              dataSource: _getCalendarDataSource(),
-              timeSlotViewSettings: TimeSlotViewSettings(
-                timeInterval: Duration(hours: 1),
-              ),
-              viewHeaderStyle: ViewHeaderStyle(
-                dayTextStyle: TextStyle(color: Colors.black), // Set text color for day headers
-                dateTextStyle: TextStyle(color: Colors.black), // Set text color for date headers
-              ),
-              appointmentTextStyle: TextStyle(color: Colors.black), // Set text color for appointment text
-              onTap: (CalendarTapDetails details) {
-                // Handle tap on the calendar cells here
-                if (details.targetElement == CalendarElement.calendarCell && details.date != null) {
-                  // Create a new appointment when tapped on the calendar cell
-                  _addAppointment(details.date!, selectedEmployee ?? '');
-                }
-              },
+            child: Row(
+              children: [
+                // Left side column with employee information
+                Container(
+                  width: 100,
+                  color: Colors.grey[200],
+                  child: Column(
 
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      for (Employee employee in _getFilteredEmployees())
+                        _buildEmployeeButton(employee),
+                    ],
+                  ),
+                ),
+                // Calendar view
+                Expanded(
+                  child: SfCalendar(
+                    view: CalendarView.week,
+                    allowDragAndDrop: true,
+                    allowAppointmentResize: true,
+                    dataSource: _getCalendarDataSource(),
+    showNavigationArrow:true,
+    showWeekNumber:true,
+    showDatePickerButton:true,
+                    timeSlotViewSettings: TimeSlotViewSettings(
+                      timeInterval: Duration(hours: 1),
+                    ),
+                    viewHeaderStyle: ViewHeaderStyle(
+                      dayTextStyle: TextStyle(color: Colors.black), // Set text color for day headers
+                      dateTextStyle: TextStyle(color: Colors.black), // Set text color for date headers
+                    ),
+                    appointmentTextStyle: TextStyle(color: Colors.black), // Set text color for appointment text
+                    onTap: (CalendarTapDetails details) {
+                      // Handle tap on the calendar cells here
+                      if (details.targetElement == CalendarElement.calendarCell && details.date != null) {
+                        // Appointment appointment = details.appointments![0];
+                        print(details.appointments);
+                        print('Selected Date: ${details.date!}');
+                        // print('Tapped on appointment - Employee: ${appointment.subject}, Time: ${appointment.startTime}');
+                        // Create a new appointment when tapped on the calendar cell
+                        _addAppointment(details.date!, selectedEmployee ?? '');
+                      }
+                    },
+                    onLongPress: (CalendarLongPressDetails details) {
+                      // Handle long press events here
+                      if (details.targetElement == CalendarElement.appointment) {
+                        Appointment appointment = details.appointments![0];
+                        print('Long pressed on appointment - Employee: ${appointment.subject}, Time: ${appointment.startTime}');
+                      }
+                    },
+                    onViewChanged: (ViewChangedDetails details) {
+                      // Handle view changes (e.g., when an appointment is dragged and dropped)
+                      // for (int i = 0; i < details.visibleDates.length; i++) {
+                      //   Appointment appointment = details.visibleDates[i];
+                      //   // Print the time duration, date, and employee for each appointment
+                      //   print('Time Duration: ${appointment.endTime.difference(appointment.startTime)}');
+                      //   print('Date: ${appointment.startTime}');
+                      //   print('Employee: ${appointment.subject}');
+                      // }
+                    },
+            
+                  ),
+                ),
+              ],
             ),
           ),
         ],
