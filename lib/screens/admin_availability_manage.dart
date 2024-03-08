@@ -189,7 +189,7 @@ class _ManageAvailabilityState extends State<ManageAvailability> {
                                 ),
                               ),
                               Container(), // Empty cell to align with the start_time column
-                              Container(), // Empty cell to align with the end_time column
+                              Text('*Double click to change status'),
                             ],
                           ),
                           for (int i = 0; i < availability['availibilityDetails'].length; i++)
