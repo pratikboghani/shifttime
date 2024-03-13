@@ -170,7 +170,7 @@ class _BookoffFormState extends State<BookoffForm> {
                     return Card(
                       color: request.isApproved ? clrGreenWhite90 : Colors.red.shade50,
                       child: ListTile(
-                        title: Text('${request.isApproved ? 'Approved' : 'Approval Pending'} \n\nReason: ${request.reasons}'),
+                        title: Text('${request.isApproved ? 'Approved' : 'Approval Pending'} \nReason: ${request.reasons}'),
                         subtitle: Text(
                           'Period: ${request.startDate} To ${request.endDate} \nDays: ${calculateDaysDifference(request.startDate, request.endDate)}',
                         ),

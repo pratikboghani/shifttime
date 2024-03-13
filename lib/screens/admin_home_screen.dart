@@ -4,6 +4,7 @@ import 'package:shifttime/screens/user_setting_screen.dart';
 import '../components/add_categories_form.dart';
 import '../utilities/constants.dart';
 import 'admin_availability_manage.dart';
+import 'admin_bookoff_manage.dart';
 import 'admin_schedule_screen.dart';
 import 'admin_setting_screen.dart';
 import 'manage_emp_screen.dart';
@@ -44,6 +45,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     ManageEmpScreen(),
     CategoryForm(),
     ManageAvailability(),
+    ManageBookoff(),
     AdminSettingScreen()
   ];
 
@@ -139,11 +141,22 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Settings'),
+              title: const Text('Manage Bookoffs'),
               selected: _selectedIndex == 5,
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(5);
+
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Settings'),
+              selected: _selectedIndex == 6,
+              onTap: () {
+                // Update the state of the app
+                _onItemTapped(6);
 
                 // Then close the drawer
                 Navigator.pop(context);
