@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shifttime/screens/admin_schedule_screen1.dart';
 import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/add_categories_form.dart';
@@ -46,7 +47,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
     CategoryForm(),
     ManageAvailability(),
     ManageBookoff(),
-    AdminSettingScreen()
+    AdminSettingScreen(),
+    ScheduleManageScreen1()
   ];
 
   void _onItemTapped(int index) {
@@ -157,6 +159,17 @@ class _AdminHomePageState extends State<AdminHomePage> {
               onTap: () {
                 // Update the state of the app
                 _onItemTapped(6);
+
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Manage Shift'),
+              selected: _selectedIndex == 7,
+              onTap: () {
+                // Update the state of the app
+                _onItemTapped(7);
 
                 // Then close the drawer
                 Navigator.pop(context);
