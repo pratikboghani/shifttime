@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:html';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:http/http.dart' as http;
 import '../utilities/constants.dart';
@@ -22,6 +24,8 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
   Map<String, int> totalMinutesMap = {};
   Map<String, int> totalShiftsMap = {};
   Map<String, Color> employeeColors = {}; // Map to store employee colors
+  Map<String, List<Map<String, dynamic>>> availabilityMap = {};
+  Map<String, List<List<String>>> availabilitySchedules = {};
 
   List<String> categories = ['All'];
   String selectedCategory = 'All'; // Default selected category
@@ -35,6 +39,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     employees = [];
     appointments = [];
     updateEmployeeStats();
+    _fetchAvailability();
   }
 
   // Function to assign unique colors to each employee
@@ -60,7 +65,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     } else {}
   }
   Future<void> _fetchEmployees() async {
-    const apiUrl = '$apiPrefix /users?query}';
+    final apiUrl = '$apiPrefix /users?query={"clientId": $clientId}';
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
@@ -70,7 +75,16 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
       setState(() {
         employees = docs.map((json) => Employee.fromJson(json)).toList();
       });
-
+      // for (var employee in employees) {
+      //   print('Employee ID: ${employee.id}');
+      //   print('Name: ${employee.firstName} ${employee.lastName}');
+      //   print('Email: ${employee.email}');
+      //   print('Gender: ${employee.gender}');
+      //   print('Role: ${employee.role}');
+      //   print('Username: ${employee.userName}');
+      //   print('Category: ${employee.category}');
+      //   print('------------------------------------');
+      // }
     } else {
       // Handle error response
       print('Failed to fetch employees. Status code: ${response.statusCode}');
@@ -78,7 +92,197 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     }
     assignEmployeeColors();
   }
+  Future<void> createShift(String userId, DateTime startDate, DateTime endDate, double duration, String idNotes) async {
+    final apiUrl = '$apiPrefix/shift/create';
 
+    // Convert DateTime objects to ISO 8601 format strings
+    final startDateTimeString = startDate.toIso8601String();
+    final endDateTimeString = endDate.toIso8601String();
+
+    // Prepare the request body
+    final Map<String, dynamic> requestBody = {
+      'userId': userId,
+      'clientId': clientId,
+      'start_date': startDateTimeString,
+      'end_date': endDateTimeString,
+      'duration': duration.toString(),
+      'notes':idNotes
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: json.encode(requestBody),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        // Shift created successfully
+        print('Shift created successfully.');
+      } else {
+        // Handle error response
+        print('Failed to create shift. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error creating shift: $e');
+    }
+  }
+  Future<void> deleteShift(String shiftId) async {
+    final apiUrl = '$apiPrefix/shift/$shiftId';
+
+    try {
+      final response = await http.delete(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        // Shift deleted successfully
+        print('Shift deleted successfully.');
+      } else {
+        // Handle error response
+        print('Failed to delete shift. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error deleting shift: $e');
+    }
+  }
+  Future<void> _fetchAvailability() async {
+    print('==============in availability=================');
+    String apiUrl = '$apiPrefix/availability?query={"isApproved": true}';
+    final response = await http.get(Uri.parse(apiUrl));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic>? docs = responseData['response']['docs'];
+
+      if (docs != null) {
+        availabilitySchedules = {};
+        //print('Docs: $docs');
+        for (var doc in docs) {
+          String userId = doc['userId'];
+          List<dynamic>? availabilityDetails = doc['availibilityDetails'];
+
+          if (availabilityDetails != null) {
+            List<List<String>> userAvailability = [];
+            for (var availabilityDetail in availabilityDetails) {
+              String? dayOfWeek = availabilityDetail['day_of_week'];
+              String? startTime = availabilityDetail['start_time'];
+              String? endTime = availabilityDetail['end_time'];
+              if (dayOfWeek != null && startTime != null && endTime != null) {
+                userAvailability.add([dayOfWeek, startTime, endTime]);
+              }
+            }
+            availabilitySchedules[userId] = userAvailability;
+
+          }
+
+        }
+        availabilitySchedules = convertDataStructure(availabilitySchedules);
+        print('User ID: $userId');
+        print('Availability: ${availabilitySchedules}');
+        print('===============================');
+      }
+    } else {
+      // Handle error response
+      print('Failed to fetch availability. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+
+  }
+  Future<void> updateShiftByAppointmentId(String appointmentId, DateTime newStartDate, DateTime newEndDate) async {
+    // Find the shift corresponding to the appointment ID
+    final apiUrl = '$apiPrefix/shift?query={"notes": "$appointmentId"}';
+    try {
+      final response = await http.get(Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $userToken',
+        },);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> docs = responseData['response']['docs'];
+        if (docs.isNotEmpty) {
+          final shiftId = docs[0]['_id'];
+          // Update the shift with the new date, start time, and end time
+          await updateShift(shiftId, newStartDate, newEndDate);
+        } else {
+          // Handle case where no shift is found for the appointment ID
+          print('No shift found for appointment ID: $appointmentId');
+        }
+      } else {
+        // Handle error response
+        print('Failed to fetch shift data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error updating shift: $e');
+    }
+  }
+  Future<void> updateShift(String shiftId, DateTime newStartDate, DateTime newEndDate) async {
+    final apiUrl = '$apiPrefix/shift/$shiftId';
+
+    // Convert DateTime objects to ISO 8601 format strings
+    final newStartDateTimeString = newStartDate.toIso8601String();
+    final newEndDateTimeString = newEndDate.toIso8601String();
+
+    // Prepare the request body
+    final Map<String, dynamic> requestBody = {
+      'start_date': newStartDateTimeString,
+      'end_date': newEndDateTimeString,
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        body: json.encode(requestBody),
+        headers: {'Content-Type': 'application/json',
+          'Authorization': 'Bearer $userToken',},
+      );
+
+      if (response.statusCode == 200) {
+        // Shift updated successfully
+        print('Shift updated successfully.');
+      } else {
+        // Handle error response
+        print('Failed to update shift. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error updating shift: $e');
+    }
+  }
+
+  int parseHour(String timeString) {
+    String hourString = timeString.split(':')[0];
+    int hour = int.parse(hourString);
+    if (timeString.contains('PM') && hour != 12) {
+      hour += 12;
+    } else if (timeString.contains('AM') && hour == 12) {
+      hour = 0;
+    }
+    return hour;
+  }
+  Map<String, List<List<String>>> convertDataStructure(Map<dynamic, dynamic> originalData) {
+    Map<String, List<List<String>>> convertedData = {};
+
+    originalData.forEach((key, value) {
+      List<List<String>> employeeAvailability = [];
+      for (var slot in value) {
+        List<String> slotString = [];
+        slotString.add("'${slot[0]}', '${slot[1]}', '${slot[2]}'"); // Enclosing each element in single quotation marks
+        employeeAvailability.add(slotString);
+      }
+      convertedData["'$key'"] = employeeAvailability; // Enclosing key in single quotation marks
+    });
+
+    return convertedData;
+  }
   @override
   Widget build(BuildContext context) {
     final filteredEmployees = selectedCategory == 'All'
@@ -165,6 +369,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                             ],
                           ),
                         ),
+
                       );
                     },
                   ),
@@ -228,10 +433,10 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
 
 
 
-                    onTap: (details) {
+                    onTap: (details) async {
                       final selectedTime = details.date!;
-                      final employee = getSelectedEmployee();
-                      if (!isEmployeeAvailable(employee.id, selectedTime)) {
+                      final employee =  getSelectedEmployee();
+                      if (! await isEmployeeAvailable(employee.id, selectedTime)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Employee is not available at this time'),
@@ -245,6 +450,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                         );
                       } else {
                         final appointment = Appointment(
+
                           startTime: details.date!,
                           endTime: details.date!.add(Duration(hours: 1)),
                           subject: '${employee.userName}',
@@ -264,6 +470,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                         print('Shift Start Time: ${appointment.startTime}');
                         print('Shift End Time: ${appointment.endTime}');
                         print('Shift Duration: $hours:$minutes');
+                        await createShift(employee.id, appointment.startTime, appointment.endTime, duration.inMinutes.toDouble(),appointment.id.toString());
                       }
                     },
                     onLongPress: (details) {
@@ -272,11 +479,19 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                         appointments.remove(appointment);
                         updateEmployeeStats();
                       });
+                      print('------Appointment ID-------');
+                      print(appointment.id);
+                      // Delete the shift using API call
+                      deleteShift(appointment.id);
                     },
                     onAppointmentResizeEnd: (details) {
                       updateEmployeeStats();
                       final appointment = details.appointment;
                       final employeeName = appointment.subject;
+                      final DateTime newStartDate = appointment.startTime!;
+                      final DateTime newEndDate = appointment.endTime!;
+                      final appointmentId = appointment.id.toString();
+                      updateShiftByAppointmentId(appointmentId, newStartDate, newEndDate);
                       print(
                           "----------------On Appoinment Resize------------------");
                       print('Employee Name: $employeeName');
@@ -285,6 +500,14 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                       print(
                           'Shift Duration: ${appointment.endTime.difference(appointment.startTime)}');
                     },
+                    onDragEnd: (AppointmentDragEndDetails appointmentDragEndDetails) {
+                      dynamic appointment = appointmentDragEndDetails.appointment!;
+                      CalendarResource? sourceResource = appointmentDragEndDetails.sourceResource;
+                      CalendarResource? targetResource = appointmentDragEndDetails.targetResource;
+                      DateTime? droppingTime = appointmentDragEndDetails.droppingTime;
+                      updateShiftByAppointmentId(appointment.id.toString(), appointment.startTime, appointment.endTime);
+                    },
+
                   ),
                 ),
               ],
@@ -318,24 +541,48 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
   //   ));
   //   return regions;
   // }
-  bool isEmployeeAvailable(String employeeId, DateTime dateTime) {
-    // Define the availability schedules for each employee
-    final Map<String, List<List<int>>> availabilitySchedules = {
-      '1': [
-        // Sunday, Monday, Tuesday: 9am - 5pm
-        [DateTime.sunday, 9, 17],
-        [DateTime.monday, 9, 17],
-        [DateTime.tuesday, 9, 17],
-      ],
-      '2': [
-        // Wednesday, Thursday, Friday: 4pm - 12am
-        [DateTime.wednesday, 16, 24],
-        [DateTime.thursday, 16, 24],
-        [DateTime.friday, 16, 24],
-      ],
-      // Add more availability schedules for other employees as needed
-    };
 
+
+  DateTime _parseTime(String timeString) {
+    // Replace non-breaking space characters with regular space characters
+    timeString = timeString.replaceAll('\u00A0', ' ');
+
+    // Split the time string into hours and minutes
+    final parts = timeString.split(':');
+    final hours = int.parse(parts[0]);
+    final minutes = int.parse(parts[1].split(' ')[0]); // Remove non-numeric characters like AM/PM
+
+    // Convert to DateTime object with arbitrary date (January 1, 0000)
+    return DateTime(0, 1, 1, hours, minutes);
+  }
+  DateTime resetDate(DateTime dateTime) {
+    return DateTime(0, 1, 1, dateTime.hour, dateTime.minute, dateTime.second, dateTime.millisecond, dateTime.microsecond);
+  }
+
+
+  String getDayOfWeek(int day) {
+    switch (day) {
+      case 1:
+        return 'MONDAY';
+      case 2:
+        return 'TUESDAY';
+      case 3:
+        return 'WEDNESDAY';
+      case 4:
+        return 'THURSDAY';
+      case 5:
+        return 'FRIDAY';
+      case 6:
+        return 'SATURDAY';
+      case 7:
+        return 'SUNDAY';
+      default:
+        return '';
+    }
+  }
+  bool isEmployeeAvailable(String employeeId, DateTime dateTime) {
+
+    print('$employeeId $dateTime');
     // Check if the employeeId exists in the availability schedules
     if (!availabilitySchedules.containsKey(employeeId)) {
       // If the employeeId is not found, consider the employee as always available
@@ -351,11 +598,27 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
       final startTime = schedule[1];
       final endTime = schedule[2];
 
-      // Check if the day of the week matches and the time falls within the range
-      if (dateTime.weekday == dayOfWeek &&
-          dateTime.hour >= startTime &&
-          dateTime.hour < endTime) {
-        return true;
+      print(dayOfWeek.toUpperCase());
+      print(getDayOfWeek(dateTime.weekday));
+
+      // Check if the day of the week matches
+      if (dayOfWeek.toUpperCase() == getDayOfWeek(dateTime.weekday)) {
+        print ('in loop');
+        print(startTime);
+        print(endTime);
+        // Parse start and end times into DateTime objects
+        final startDateTime = _parseTime(startTime);
+        final endDateTime = _parseTime(endTime);
+        print('start $startDateTime');
+        print('end $endDateTime');
+
+        print(dateTime.isAfter(startDateTime));
+        print(dateTime.isBefore(endDateTime));
+        print(dateTime);
+        // Check if the current time is within the availability slot
+        if (resetDate(dateTime).isAfter(startDateTime) && resetDate(dateTime).isBefore(endDateTime)) {
+          return true;
+        }
       }
     }
 
@@ -363,6 +626,58 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     return false;
   }
 
+  List<TimeRegion> generateAvailabilityTimeRegions(Employee employee) {
+    final List<TimeRegion> regions = [];
+    final Map<String, List<List<int>>> availabilitySchedules = {
+      '65ce5ef34b43922c57ba63dc': [
+        // Example availability schedule for employee 1
+        [DateTime.sunday, 9, 17],
+        [DateTime.monday, 9, 17],
+        [DateTime.tuesday, 9, 17],
+      ],
+      '65dee32db1a7216c77da57f7': [
+        // Example availability schedule for employee 2
+        [DateTime.wednesday, 16, 24],
+        [DateTime.thursday, 16, 24],
+        [DateTime.friday, 16, 24],
+      ],
+      // Add more availability schedules for other employees as needed
+    };
+
+    // Get the availability schedule for the selected employee
+    final availabilitySchedule = availabilitySchedules[employee.id];
+
+    if (availabilitySchedule != null) {
+      for (final schedule in availabilitySchedule) {
+        final dayOfWeek = schedule[0];
+        final startTime = schedule[1];
+        final endTime = schedule[2];
+
+        // Generate time regions for available slots
+        final availableRegion = TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            startTime,
+            0,
+          ),
+          endTime: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            endTime,
+            0,
+          ),
+          color: Colors.green.withOpacity(0.2), // Customize the color as needed
+        );
+
+        regions.add(availableRegion);
+      }
+    }
+
+    return regions;
+  }
   void setSelectedEmployee(Employee employee) {
     setState(() {
       selectedEmployee = employee;
@@ -408,7 +723,43 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     }
     return false;
   }
+  Widget timeRegionBuilder(
+      BuildContext context, TimeRegionDetails timeRegionDetails) {
+    final selectedEmployee = getSelectedEmployee();
+    final selectedTime = timeRegionDetails.date ?? DateTime.now();
 
+    // Check if the selected employee is not available at this time
+    if (selectedEmployee != null &&
+        !isEmployeeAvailable(selectedEmployee.id, selectedTime)) {
+      // Return a disabled container for unavailable time slots
+      return Container(
+        color: Colors.grey.withOpacity(0.5),
+      );
+    }
+
+    // Your existing code for handling specific time regions
+    if (timeRegionDetails.region.text == "Lunch") {
+      return Container(
+        color: timeRegionDetails.region.color,
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.restaurant,
+          color: Colors.grey.withOpacity(0.5),
+        ),
+      );
+    } else if (timeRegionDetails.region.text == "WeekEnd") {
+      return Container(
+        color: timeRegionDetails.region.color,
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.weekend,
+          color: Colors.grey.withOpacity(0.5),
+        ),
+      );
+    }
+
+    return Container();
+  }
 }
 
 class Employee {
@@ -419,7 +770,7 @@ class Employee {
   final String gender;
   final String role;
   final String userName;
-  final String category;
+  final String? category;
 
   Employee({
     required this.id,
@@ -451,26 +802,4 @@ class AppointmentDataSource extends CalendarDataSource {
     this.appointments = appointments;
   }
 }
-Widget timeRegionBuilder(
-    BuildContext context, TimeRegionDetails timeRegionDetails) {
-  if (timeRegionDetails.region.text == "Lunch") {
-    return Container(
-      color: timeRegionDetails.region.color,
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.restaurant,
-        color: Colors.grey.withOpacity(0.5),
-      ),
-    );
-  } else if (timeRegionDetails.region.text == "WeekEnd") {
-    return Container(
-      color: timeRegionDetails.region.color,
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.weekend,
-        color: Colors.grey.withOpacity(0.5),
-      ),
-    );
-  }
-  return Container();
-}
+
