@@ -65,7 +65,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     } else {}
   }
   Future<void> _fetchEmployees() async {
-    final apiUrl = '$apiPrefix /users?query={"clientId": $clientId}';
+    final apiUrl = '$apiPrefix/users?query={"clientId": $clientId}';
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
@@ -75,24 +75,49 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
       setState(() {
         employees = docs.map((json) => Employee.fromJson(json)).toList();
       });
-      // for (var employee in employees) {
-      //   print('Employee ID: ${employee.id}');
-      //   print('Name: ${employee.firstName} ${employee.lastName}');
-      //   print('Email: ${employee.email}');
-      //   print('Gender: ${employee.gender}');
-      //   print('Role: ${employee.role}');
-      //   print('Username: ${employee.userName}');
-      //   print('Category: ${employee.category}');
-      //   print('------------------------------------');
-      // }
+
+      // Fetch shifts from the API
+      await _fetchShifts();
     } else {
       // Handle error response
       print('Failed to fetch employees. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
+
     assignEmployeeColors();
   }
-  Future<void> createShift(String userId, DateTime startDate, DateTime endDate, double duration, String idNotes) async {
+  Future<void> _fetchShifts() async {
+    final apiUrl = '$apiPrefix/shift?query={"clientId": $clientId}';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> docs = responseData['response']['docs'];
+
+      setState(() {
+        appointments = docs.map((json) {
+          final userId = json['userId'];
+          final employee = employees.firstWhere((emp) => emp.id == userId);
+          final userName = employee?.userName ?? 'Unknown';
+          final color = employeeColors[userName] ?? Colors.green;
+
+          return Appointment(
+            id: json['appointmentId'],
+            startTime: DateTime.parse(json['start_date']),
+            endTime: DateTime.parse(json['end_date']),
+            subject: userName,
+            color: color,
+          );
+        }).toList();
+      });
+    } else {
+      // Handle error response
+      print('Failed to fetch shifts. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+    updateEmployeeStats();
+  }
+  Future<void> createShift(String userId, DateTime startDate, DateTime endDate, double duration, String appointmentId) async {
     final apiUrl = '$apiPrefix/shift/create';
 
     // Convert DateTime objects to ISO 8601 format strings
@@ -106,7 +131,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
       'start_date': startDateTimeString,
       'end_date': endDateTimeString,
       'duration': duration.toString(),
-      'notes':idNotes
+      'appointmentId':appointmentId
     };
 
     try {
@@ -195,18 +220,20 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
   }
   Future<void> updateShiftByAppointmentId(String appointmentId, DateTime newStartDate, DateTime newEndDate) async {
     // Find the shift corresponding to the appointment ID
-    final apiUrl = '$apiPrefix/shift?query={"notes": "$appointmentId"}';
+    final apiUrl = '$apiPrefix/shift?query={"appointmentId": "$appointmentId"}';
     try {
       final response = await http.get(Uri.parse(apiUrl),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $userToken',
-        },);
+        },
+      );
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final List<dynamic> docs = responseData['response']['docs'];
         if (docs.isNotEmpty) {
           final shiftId = docs[0]['_id'];
+          print('updateShiftByAppointmentId $newStartDate and $newEndDate');
           // Update the shift with the new date, start time, and end time
           await updateShift(shiftId, newStartDate, newEndDate);
         } else {
@@ -227,8 +254,10 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     final apiUrl = '$apiPrefix/shift/$shiftId';
 
     // Convert DateTime objects to ISO 8601 format strings
-    final newStartDateTimeString = newStartDate.toIso8601String();
-    final newEndDateTimeString = newEndDate.toIso8601String();
+    final newStartDateTimeString = newStartDate.toString();
+    final newEndDateTimeString = newEndDate.toString();
+    print('updateShift $newStartDate and $newEndDate');
+    print('updateShift2 $newStartDateTimeString and $newEndDateTimeString');
 
     // Prepare the request body
     final Map<String, dynamic> requestBody = {
@@ -449,6 +478,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                           ),
                         );
                       } else {
+                        print('Selected time on tap ${details.date}');
                         final appointment = Appointment(
 
                           startTime: details.date!,
@@ -491,6 +521,8 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                       final DateTime newStartDate = appointment.startTime!;
                       final DateTime newEndDate = appointment.endTime!;
                       final appointmentId = appointment.id.toString();
+                      print('Selected time on onAppointmentResizeEnd ${appointment.newStartDate } and ${appointment.newEndDatex}');
+
                       updateShiftByAppointmentId(appointmentId, newStartDate, newEndDate);
                       print(
                           "----------------On Appoinment Resize------------------");
@@ -506,6 +538,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                       CalendarResource? targetResource = appointmentDragEndDetails.targetResource;
                       DateTime? droppingTime = appointmentDragEndDetails.droppingTime;
                       updateShiftByAppointmentId(appointment.id.toString(), appointment.startTime, appointment.endTime);
+                      print('Selected time on DragEnd ${appointment.startTime } and ${appointment.endTime}');
                     },
 
                   ),

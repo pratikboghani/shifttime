@@ -62,7 +62,7 @@ class _NavigationState extends State<Navigation> {
         ],
       ),
       body: <Widget>[
-        /// Notifications page
+        /// Home page
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(

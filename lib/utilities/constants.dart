@@ -107,7 +107,7 @@ final ThemeData mytheme = ThemeData(
   ),
   checkboxTheme: CheckboxThemeData(
     fillColor: MaterialStateColor.resolveWith(
-      (states) => clrGreenOriginal,
+      (states) => clrGreenWhite50,
     ),
   ),
   textButtonTheme: TextButtonThemeData(

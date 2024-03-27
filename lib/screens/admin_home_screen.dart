@@ -7,6 +7,7 @@ import '../utilities/constants.dart';
 import 'admin_availability_manage.dart';
 import 'admin_bookoff_manage.dart';
 import 'admin_schedule_screen.dart';
+import 'admin_sendemail_screen.dart';
 import 'admin_setting_screen.dart';
 import 'manage_emp_screen.dart';
 
@@ -42,13 +43,14 @@ class _AdminHomePageState extends State<AdminHomePage> {
       'Index 0: Home',
       style: optionStyle,
     ),
-    ScheduleManageScreen(),
+    ScheduleManageScreen1(),
     ManageEmpScreen(),
     CategoryForm(),
     ManageAvailability(),
     ManageBookoff(),
-    AdminSettingScreen(),
-    ScheduleManageScreen1()
+    SendEmail(),
+    AdminSettingScreen()
+
   ];
 
   void _onItemTapped(int index) {
@@ -154,7 +156,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Settings'),
+              title: const Text('Send eMail'),
               selected: _selectedIndex == 6,
               onTap: () {
                 // Update the state of the app
@@ -165,7 +167,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Manage Shift'),
+              title: const Text('Settings'),
               selected: _selectedIndex == 7,
               onTap: () {
                 // Update the state of the app
@@ -175,6 +177,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 Navigator.pop(context);
               },
             ),
+
           ],
         ),
       ),

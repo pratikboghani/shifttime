@@ -33,7 +33,9 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController clientIdController =
       TextEditingController(text: '1001');
   List<String> categories = [];
+  List<String> categoriesId = [];
   String selectedCategory = '';
+  String selectedCategoryId = '';
 
   Future<void> insertUser() async {
     if (_validateFields()) {
@@ -59,7 +61,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
             'emergencyContactNumber': emergencyContactNumberController.text,
             'userName': userNameController.text,
             'password': 'pppppppp',
-            'category':selectedCategory
+            'category':selectedCategory,
+            'workRole':selectedCategoryId
           }),
         );
 
@@ -150,11 +153,15 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
         final List<dynamic> docs = responseData['response']['docs'];
 
         setState(() {
+
           categories = docs.map<String>((category) => category['category'].toString()).toList();
+          categoriesId = docs.map<String>((category) => category['_id'].toString()).toList();
           // if (categories.isNotEmpty) {
           //   selectedCategory = categories[0];
           // }
+
         });
+        print(categories);
       } else {
         // Handle error response
         print('Failed to fetch categories. Status code: ${response.statusCode}');
@@ -362,6 +369,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                   if (newValue != null) {
                     setState(() {
                       selectedCategory = newValue;
+                      selectedCategoryId= categoriesId[categories.indexOf(newValue)];
                     });
                   }
                 },

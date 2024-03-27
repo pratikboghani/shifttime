@@ -21,7 +21,8 @@ class _EmployeeListPageState extends State<EmployeeListPage> {
 
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('$apiPrefix/users'));
+    final apiUrl = '$apiPrefix/users?query={"clientId": $clientId}';
+    final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
