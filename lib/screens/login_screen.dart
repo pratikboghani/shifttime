@@ -294,36 +294,36 @@ class _LoginScreenState extends State<LoginScreen> {
               bgColor: clrGreenOriginalLight,
               buttonTextColor: blueColor,
             ),
-            RaisedButtonWidget(
-              buttonText: 'Log In admin',
-              onPressed: () async {
-                setState(() {
-                  clientId='1001';
-                  firstName='Pratik';
-                });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
-                );
-              },
-              bgColor: clrGreenOriginalLight,
-              buttonTextColor: blueColor,
-            ),
-            RaisedButtonWidget(
-              buttonText: 'Log In user',
-              onPressed: () async {
-setState(() {
-  clientId='1001';
-  firstName='Pratik';
-});
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UserHomeScreen()),
-                );
-              },
-              bgColor: clrGreenOriginalLight,
-              buttonTextColor: blueColor,
-            ),
+//             RaisedButtonWidget(
+//               buttonText: 'Log In admin',
+//               onPressed: () async {
+//                 setState(() {
+//                   clientId='1001';
+//                   firstName='Pratik';
+//                 });
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
+//                 );
+//               },
+//               bgColor: clrGreenOriginalLight,
+//               buttonTextColor: blueColor,
+//             ),
+//             RaisedButtonWidget(
+//               buttonText: 'Log In user',
+//               onPressed: () async {
+// setState(() {
+//   clientId='1001';
+//   firstName='Pratik';
+// });
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(builder: (context) => const UserHomeScreen()),
+//                 );
+//               },
+//               bgColor: clrGreenOriginalLight,
+//               buttonTextColor: blueColor,
+//             ),
           ],
         ),
         const SizedBox(

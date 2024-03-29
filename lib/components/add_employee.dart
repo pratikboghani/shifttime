@@ -5,13 +5,13 @@ import 'dart:convert';
 
 import '../utilities/constants.dart';
 import '../utilities/text_form_field_widget.dart';
+
 class AddEmployeeForm extends StatefulWidget {
   const AddEmployeeForm({Key? key}) : super(key: key);
 
   @override
   _InsertUserFormState createState() => _InsertUserFormState();
 }
-
 
 class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController firstNameController = TextEditingController();
@@ -23,6 +23,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   final TextEditingController birthdateController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
+
   // final TextEditingController categoryController = TextEditingController();
 
   final TextEditingController emergencyContactNameController =
@@ -32,6 +33,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
   String selectedValue = "USA";
   final TextEditingController clientIdController =
       TextEditingController(text: '1001');
+  String defaultPassword = 'pppppppp';
   List<String> categories = [];
   List<String> categoriesId = [];
   String selectedCategory = '';
@@ -60,9 +62,9 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
             'emergencyContactName': emergencyContactNameController.text,
             'emergencyContactNumber': emergencyContactNumberController.text,
             'userName': userNameController.text,
-            'password': 'pppppppp',
-            'category':selectedCategory,
-            'workRole':selectedCategoryId
+            'password': defaultPassword,
+            'category': selectedCategory,
+            'workRole': selectedCategoryId
           }),
         );
 
@@ -91,8 +93,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
         emergencyContactNameController.text.isEmpty ||
         emergencyContactNumberController.text.isEmpty ||
         clientIdController.text.isEmpty ||
-        userNameController.text.isEmpty||
-    selectedCategory.length==0) {
+        userNameController.text.isEmpty ||
+        selectedCategory.length == 0) {
       _showErrorSnackbar('All fields are required');
       return false;
     }
@@ -116,7 +118,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
           emergencyContactNameController.clear();
           emergencyContactNumberController.clear();
           userNameController.clear();
-          selectedCategory='';
+          selectedCategory = '';
           // clientIdController.clear();
         },
       ),
@@ -153,18 +155,21 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
         final List<dynamic> docs = responseData['response']['docs'];
 
         setState(() {
-
-          categories = docs.map<String>((category) => category['category'].toString()).toList();
-          categoriesId = docs.map<String>((category) => category['_id'].toString()).toList();
+          categories = docs
+              .map<String>((category) => category['category'].toString())
+              .toList();
+          categoriesId = docs
+              .map<String>((category) => category['_id'].toString())
+              .toList();
           // if (categories.isNotEmpty) {
           //   selectedCategory = categories[0];
           // }
-
         });
         print(categories);
       } else {
         // Handle error response
-        print('Failed to fetch categories. Status code: ${response.statusCode}');
+        print(
+            'Failed to fetch categories. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
       }
     } catch (error) {
@@ -178,6 +183,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
     super.initState();
     _fetchCategories();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,6 +193,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Text('*Default Password is $defaultPassword'),
               TextFormFieldWidget(
                 obSecureText: false,
                 keyboardType: TextInputType.text,
@@ -369,7 +376,8 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                   if (newValue != null) {
                     setState(() {
                       selectedCategory = newValue;
-                      selectedCategoryId= categoriesId[categories.indexOf(newValue)];
+                      selectedCategoryId =
+                          categoriesId[categories.indexOf(newValue)];
                     });
                   }
                 },
@@ -397,7 +405,7 @@ class _InsertUserFormState extends State<AddEmployeeForm> {
                     return clrGreenWhite60;
                   }),
                   foregroundColor: MaterialStateColor.resolveWith(
-                        (Set<MaterialState> states) {
+                    (Set<MaterialState> states) {
                       return clrBlack;
                     },
                   ),
