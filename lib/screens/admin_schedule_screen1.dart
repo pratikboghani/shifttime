@@ -48,7 +48,15 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     updateEmployeeStats();
     _fetchAvailability();
   }
-
+  void _showSnackbar(String errorMessage, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
   // Function to assign unique colors to each employee
   void assignEmployeeColors() {
     final random = Random();
@@ -277,6 +285,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     final Map<String, dynamic> requestBody = {
       'start_date': newStartDateTimeString,
       'end_date': newEndDateTimeString,
+      'duration':newEndDateUtc.difference(newStartDateUtc).inMinutes.toDouble(),
     };
 
     try {
@@ -392,9 +401,9 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
     }
   }
   Future<void> publishShifts(DateTime startDate, DateTime endDate) async {
-    final apiUrl =
-        '$apiPrefix/shift/datewise?startDate=${startDate.toUtc().toIso8601String()}&endDate=${endDate.toUtc().toIso8601String()}';
+    endDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);
 
+    final apiUrl = '$apiPrefix/shift/datewise?startDate=${startDate.toUtc().toIso8601String()}&endDate=${endDate.toUtc().toIso8601String()}';
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -406,6 +415,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
+
         final List<dynamic> docs = responseData['response'];
 
         for (var doc in docs) {
@@ -415,9 +425,6 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
             await updateShiftPublishStatus(shiftId, true);
           }
         }
-
-        // Optionally, you can fetch the updated shifts data and update the UI
-        // await _fetchShifts();
       } else {
         // Handle error response
         print('Failed to publish shifts. Status code: ${response.statusCode}');
@@ -459,6 +466,57 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
       print('Error updating shift publish status: $e');
     }
   }
+  Future<void> _sendEmail(DateTime startDate, DateTime endDate) async {
+    endDate = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59, 999);
+      final apiUrl = '$apiPrefix/email/sentshiftdetails';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'startDate': startDate.toUtc().toIso8601String(),
+          'endDate': endDate.toUtc().toIso8601String(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Email sent successfully
+        _showSnackbar('Shift Published and Email sent successfully.', clrGreenOriginal);
+        print('Email sent successfully.');
+      } else {
+        _showSnackbar(
+            'Failed to send email. Status code: ${response.statusCode}',
+            Colors.red);
+        // Handle error response
+        print('Failed to send email. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+  }
+  void showCustomMenu(BuildContext context, Offset offset) {
+    final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromCenter(center: offset, width: 0, height: 0),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu(
+      context: context,
+      position: position,
+      items: [
+        PopupMenuItem(
+          child: Text('Custom Option 1'),
+          onTap: () {
+            // Handle custom option 1
+          },
+        ),
+        PopupMenuItem(
+          child: Text('Custom Option 2'),
+          onTap: () {
+            // Handle custom option 2
+          },
+        ),
+        // Add more custom options as needed
+      ],
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final filteredEmployees = selectedCategory == 'All'
@@ -468,6 +526,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
             .toList();
 
     return Scaffold(
+
       body: Column(
         children: [
           Row(
@@ -511,6 +570,10 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                         onTap: () {
                           setSelectedEmployee(employee);
                         },
+                        onSecondaryTap: (){
+                          print('second tapppppppppp');
+                        },
+
                         child: Container(
                           padding: EdgeInsets.all(8.0),
                           margin: EdgeInsets.symmetric(vertical: 4.0),
@@ -554,12 +617,14 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                 // Right side column with calendar view
                 Expanded(
                   child: SfCalendar(
+
                     view: CalendarView.week,
                     showNavigationArrow: true,
                     showWeekNumber: true,
                     showDatePickerButton: true,
                     allowDragAndDrop: true,
                     allowAppointmentResize: true,
+firstDayOfWeek: 1,
                     //specialRegions: _getTimeRegions(),
                     timeRegionBuilder: timeRegionBuilder,
                     dataSource:
@@ -587,6 +652,17 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                                 updateEmployeeStats();
                               });
                             }
+                          },
+                          onSecondaryTap: (){
+                            print('right clickkkkkkkkkkkkk');
+                          },
+                          onSecondaryTapUp: (TapUpDetails details) {
+                            // Show your custom menu options here
+                            showCustomMenu(context, details.globalPosition);
+                          },
+                          onSecondaryTapDown: (TapDownDetails details) {
+                            // Show your custom menu options here
+                            showCustomMenu(context, details.globalPosition);
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -656,6 +732,7 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
                         print('Shift Start Time: ${appointment.startTime}');
                         print('Shift End Time: ${appointment.endTime}');
                         print('Shift Duration: $hours:$minutes');
+                        print('Shift Duration2: ${duration.inMinutes.toDouble()}');
                         await createShift(
                             employee.id,
                             appointment.startTime,
@@ -721,8 +798,10 @@ class _ScheduleManageScreen1State extends State<ScheduleManageScreen1> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          publishShifts(_weekStartDate, _weekEndDate);
+        onPressed: () async{
+          await publishShifts(_weekStartDate, _weekEndDate);
+          print('${_weekStartDate} to $_weekEndDate');
+          await _sendEmail(_weekStartDate, _weekEndDate);
         },
         child: Text('Publish'),
       ),

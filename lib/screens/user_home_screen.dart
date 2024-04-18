@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shifttime/components/bookoff_form.dart';
+import 'package:shifttime/screens/user_daywise_schedule_screen.dart';
+import 'package:shifttime/screens/user_schedule_screen.dart';
+import 'package:shifttime/screens/user_weekwise_schedule_screen.dart';
 import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/availability_form.dart';
@@ -63,24 +66,20 @@ class _NavigationState extends State<Navigation> {
       ),
       body: <Widget>[
         /// Home page
-        const Padding(
-          padding: EdgeInsets.all(8.0),
+        DefaultTabController(
+          length: 2,
           child: Column(
-            children: <Widget>[
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 1'),
-                  subtitle: Text('This is a notification'),
-                ),
+            children: [
+              TabBar(
+                tabs: [
+                  Tab(text: 'My Shifts'),
+                  Tab(text: "Today's Roster"),
+
+                ],
               ),
-              Card(
-                child: ListTile(
-                  leading: Icon(Icons.notifications_sharp),
-                  title: Text('Notification 2'),
-                  subtitle: Text('This is a notification'),
-                ),
-              ),
+              Expanded(
+                  child: TabBarView(
+                      children: [UserSchedule(), UserDayWiseSchedule(),])),
             ],
           ),
         ),
@@ -92,14 +91,14 @@ class _NavigationState extends State<Navigation> {
             children: [
               TabBar(
                 tabs: [
-                  Tab(text: 'Schedule'),
                   Tab(text: 'Bookoffs'),
+                  Tab(text: 'Schedule'),
                   Tab(text: 'Availability'),
                 ],
               ),
               Expanded(
                   child: TabBarView(
-                      children: [Text('Schedule'), BookoffForm(), AvailabilityForm()])),
+                      children: [BookoffForm(), UserWeekWiseSchedule(), AvailabilityForm()])),
             ],
           ),
         ),

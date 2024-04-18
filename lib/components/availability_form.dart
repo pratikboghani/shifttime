@@ -88,6 +88,7 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
       'userId': userId,
       'availibilityDetails': availabilityDetailsList.map((detail) => detail.toJson()).toList(),
       'notes': 'my note',
+      "clientId": clientId,
     };
     void _showSnackbar(String message,Color color) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -148,78 +149,82 @@ class _AvailabilityFormState extends State<AvailabilityForm> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double listWidth = screenWidth < 600 ? screenWidth * 0.9 : 600;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: double.infinity,
-            ),
+        child: Center(
+          child: Container(
+            width: listWidth,
+            child: Column(
 
-            Column(
-              children: availabilityList.map((availability) {
-                bool isApproved = availability['isApproved'];
-                return Card(
-                  margin: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  children: availabilityList.map((availability) {
+                    bool isApproved = availability['isApproved'];
+                    return Card(
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
 
-                  color: isApproved ? clrGreenWhite90 : Colors.red.shade50, // Change color based on approval status
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Table(
-                      columnWidths: const {
-                        0: FlexColumnWidth(2),
-                        1: FlexColumnWidth(1),
-                        2: FlexColumnWidth(1),
-                      },
-                      children: [
-                        TableRow(
+                      color: isApproved ? clrGreenWhite90 : Colors.red.shade50, // Change color based on approval status
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Table(
+                          columnWidths: const {
+                            0: FlexColumnWidth(2),
+                            1: FlexColumnWidth(1),
+                            2: FlexColumnWidth(1),
+                          },
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text(
-                                isApproved ? 'Approved' : 'Approval Pending',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                            TableRow(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    isApproved ? 'Approved' : 'Approval Pending',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Container(), // Empty cell to align with the start_time column
+                                Container(), // Empty cell to align with the end_time column
+                              ],
                             ),
-                            Container(), // Empty cell to align with the start_time column
-                            Container(), // Empty cell to align with the end_time column
+                            for (int i = 0; i < availability['availibilityDetails'].length; i++)
+                              TableRow(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      '${availability['availibilityDetails'][i]['day_of_week']}',
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text('${availability['availibilityDetails'][i]['start_time']}'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text('${availability['availibilityDetails'][i]['end_time']}'),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
-                        for (int i = 0; i < availability['availibilityDetails'].length; i++)
-                          TableRow(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  '${availability['availibilityDetails'][i]['day_of_week']}',
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text('${availability['availibilityDetails'][i]['start_time']}'),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text('${availability['availibilityDetails'][i]['end_time']}'),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+              ],
             ),
-        
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () => _showAddAvailabilityPopup(context),child: const Icon(Icons.add)),

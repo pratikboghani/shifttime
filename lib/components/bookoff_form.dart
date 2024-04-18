@@ -68,7 +68,7 @@ class _BookoffFormState extends State<BookoffForm> {
 
   Future<void> fetchBookoffRequests() async {
     final String apiUrl = '$apiPrefix/bookoff/?query={"userId": "$userId", "clientId": $clientId}';
-
+print(apiUrl);
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -89,7 +89,7 @@ class _BookoffFormState extends State<BookoffForm> {
 
         setState(() {});
       } else {
-        print('Failed to fetch bookoff requests with status: ${response.statusCode}');
+        print('Failed to fetch bookoff1 requests with status: ${response.statusCode}');
       }
     } catch (e) {
       print('Error while fetching bookoff requests: $e');
@@ -115,71 +115,78 @@ class _BookoffFormState extends State<BookoffForm> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double listWidth = screenWidth < 600 ? screenWidth * 0.9 : 600;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-        
-            Row(
+        child: Center(
+          child: Container(
+            width: listWidth,
+            child: Column(
               children: [
-                Expanded(
-                  child: DatePicker(
-                    controller: fController,
-                    hintText: 'From date',
-                    labelText: 'from date',
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: DatePicker(
+                        controller: fController,
+                        hintText: 'From date',
+                        labelText: 'from date',
+                      ),
+                    ),
+                    const Text('To'),
+                    Expanded(
+                      child: DatePicker(
+                        controller: tController,
+                        hintText: 'To date',
+                        labelText: 'to date',
+                      ),
+                    ),
+
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20,8,20,8),
+                  child: TextFormFieldWidget(
+                      labelText: "Reason for bookoff",
+                      hintText: 'Enter Reason',
+                      icon: const Icon(Icons.lightbulb_outline),
+                      keyboardType: TextInputType.number,
+                      validator: () {},
+                      controller: daysController,
+                      maxLength: 100),
+                ),
+                Padding(
+
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButtonWidget(
+                    bgColor: clrGreenOriginal,
+                    buttonText: 'Request Bookoff',
+                    buttonTextColor: clrWhite,
+                    onPressed: () => submitBookoffRequest(),
                   ),
                 ),
-                const Text('To'),
-                Expanded(
-                  child: DatePicker(
-                    controller: tController,
-                    hintText: 'To date',
-                    labelText: 'to date',
+
+                if (bookoffRequests.isNotEmpty)
+                  SingleChildScrollView(
+                    child: Column(
+                      children: bookoffRequests.map((request) {
+
+                        return Card(
+                          color: request.isApproved ? clrGreenWhite90 : Colors.red.shade50,
+                          child: ListTile(
+                            title: Text('${request.isApproved ? 'Approved' : 'Approval Pending'} \nReason: ${request.reasons}'),
+                            subtitle: Text(
+                              'Period: ${request.startDate} To ${request.endDate} \nDays: ${calculateDaysDifference(request.startDate, request.endDate)}',
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-        
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20,8,20,8),
-              child: TextFormFieldWidget(
-                  labelText: "Reason for bookoff",
-                  hintText: 'Enter Reason',
-                  icon: const Icon(Icons.lightbulb_outline),
-                  keyboardType: TextInputType.number,
-                  validator: () {},
-                  controller: daysController,
-                  maxLength: 100),
-            ),
-            Padding(
-        
-              padding: const EdgeInsets.all(8.0),
-              child: RaisedButtonWidget(
-                bgColor: clrGreenOriginal,
-                buttonText: 'Request Bookoff',
-                buttonTextColor: clrWhite,
-                onPressed: () => submitBookoffRequest(),
-              ),
-            ),
-            
-            if (bookoffRequests.isNotEmpty)
-              SingleChildScrollView(
-                child: Column(
-                  children: bookoffRequests.map((request) {
-
-                    return Card(
-                      color: request.isApproved ? clrGreenWhite90 : Colors.red.shade50,
-                      child: ListTile(
-                        title: Text('${request.isApproved ? 'Approved' : 'Approval Pending'} \nReason: ${request.reasons}'),
-                        subtitle: Text(
-                          'Period: ${request.startDate} To ${request.endDate} \nDays: ${calculateDaysDifference(request.startDate, request.endDate)}',
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
 

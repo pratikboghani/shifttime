@@ -122,96 +122,103 @@ class _SendEmailState extends State<SendEmail> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double listWidth = screenWidth < 600 ? screenWidth * 0.9 : 600;
     return Scaffold(
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextFormFieldWidget(
-                  obSecureText: false,
-                  keyboardType: TextInputType.text,
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'Email description is required';
-                    }
-                  },
-                  controller: descriptionController,
-                  labelText: 'Email description',
-                  hintText: 'enter email description',
-                  icon: const Icon(
-                    Icons.person,
-                    color: clrGreenOriginal,
-                  ),
-                  maxLength: 100,
-                ),
-                const SizedBox(height: 16),
-                Row(
+            child: Center(
+              child: Container(
+                width: listWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Checkbox(
-                      value: selectAll,
-                      onChanged: _toggleSelectAll,
+                    TextFormFieldWidget(
+                      obSecureText: false,
+                      keyboardType: TextInputType.text,
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Email description is required';
+                        }
+                      },
+                      controller: descriptionController,
+                      labelText: 'Email description',
+                      hintText: 'enter email description',
+                      icon: const Icon(
+                        Icons.person,
+                        color: clrGreenOriginal,
+                      ),
+                      maxLength: 300,
                     ),
-                    SizedBox(width: 8),
-                    Text('Select All'),
-                  ],
-                ),
-                SizedBox(height: 16),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: categorizedEmployees.length,
-                  itemBuilder: (context, index) {
-                    final category = categorizedEmployees.keys.elementAt(index);
-                    final categoryEmployees = categorizedEmployees[category]!;
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: selectAll,
+                          onChanged: _toggleSelectAll,
+                        ),
+                        SizedBox(width: 8),
+                        Text('Select All'),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: categorizedEmployees.length,
+                      itemBuilder: (context, index) {
+                        final category = categorizedEmployees.keys.elementAt(index);
+                        final categoryEmployees = categorizedEmployees[category]!;
 
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            leading: Checkbox(
-                              value: selectedCategories.contains(category),
-                              onChanged: (value) {
-                                _toggleCategorySelection(category);
-                              },
-                            ),
-                            title: Text(
-                              category,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: categoryEmployees.length,
-                            itemBuilder: (context, index) {
-                              final employee = categoryEmployees[index];
-                              return ListTile(
-                                title: Text(
-                                    '${employee.firstName} ${employee.lastName}'),
-                                subtitle: Text(employee.email),
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
                                 leading: Checkbox(
-                                  value:
-                                      selectedEmails.contains(employee.email),
+                                  value: selectedCategories.contains(category),
                                   onChanged: (value) {
-                                    _toggleSelection(employee.email);
+                                    _toggleCategorySelection(category);
                                   },
                                 ),
-                              );
-                            },
+                                title: Text(
+                                  category,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: categoryEmployees.length,
+                                itemBuilder: (context, index) {
+                                  final employee = categoryEmployees[index];
+                                  return ListTile(
+                                    title: Text(
+                                        '${employee.firstName} ${employee.lastName}'),
+                                    subtitle: Text(employee.email),
+                                    leading: Checkbox(
+                                      value:
+                                          selectedEmails.contains(employee.email),
+                                      onChanged: (value) {
+                                        _toggleSelection(employee.email);
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

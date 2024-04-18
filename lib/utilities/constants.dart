@@ -3,8 +3,8 @@ import 'dart:js';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
-var scrWidth = MediaQuery.of(context as BuildContext).size.width;
-var scrHeight = MediaQuery.of(context as BuildContext).size.height;
+// var scrWidth = MediaQuery.of(context as BuildContext).size.width;
+// var scrHeight = MediaQuery.of(context as BuildContext).size.height;
 
 const clrGreenOriginal = Color(0xff43a756);
 const clrGreenOriginalLight = Color(0xFFd9eddd);
@@ -31,9 +31,9 @@ const clrWhite = Colors.white;
 const blueColor = Color(0xFF1B5A77);
 const greyColor = Colors.black;
 //Color(0xFF5E5F5E);
-// const apiPrefix = 'https://shifttime.onrender.com';
+const apiPrefix = 'https://shifttime.onrender.com';
 // const apiPrefix = 'http://103.155.115.118:8686/';
-const apiPrefix = 'http://localhost:3000';
+// const apiPrefix = 'http://localhost:3000';
 
 const welcomeTextStyle = TextStyle(
   fontSize: 23,
@@ -263,3 +263,6 @@ var userRole;
 var clientId;
 var userId;
 var firstName;
+const double mobileScreenWidthThreshold = 400.0;
+var defaultPassword='ShiftTime';
+double? spaceBtwnTwoField=15;

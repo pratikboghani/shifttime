@@ -38,12 +38,15 @@ class _AdminInfoScreenScreenState extends State<AdminInfoScreen> {
   void initState() {
     super.initState();
     fetchData('$apiPrefix/users/$userId').then((data) {
-      setState(() {
-        userData = data['response'];
-      });
+
+      if(data['response'] != null){
+        setState(() {
+          userData = data['response'];
+        });
+      }
+
     }).catchError((error) {
       print('Error fetching data: $error');
-      // Handle error, show a message, or take appropriate action
     });
   }
 
@@ -83,6 +86,12 @@ class _AdminInfoScreenScreenState extends State<AdminInfoScreen> {
                   title: 'Password Information',
                   data: {
                     'Password': '********',
+                  },
+                ),SizedBox(height: 16),
+                UserInfoCard(
+                  title: 'Employee Password Information',
+                  data: {
+                    "Employee's Password": userData['defaultPassword'].toString(),
                   },
                 ),
               ],
@@ -224,6 +233,17 @@ class _UserInfoCardState extends State<UserInfoCard> {
       );
       print(response.body);
       if (response.statusCode == 200) {
+        fetchData('$apiPrefix/users/$userId').then((data) {
+
+          if(data['response'] != null){
+            setState(() {
+              userData = data['response'];
+            });
+          }
+
+        }).catchError((error) {
+          print('Error fetching data: $error');
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User updated successfully'),
@@ -330,6 +350,8 @@ String mapKey(String uiKey) {
       return 'emergencyContactNumber';
     case 'Password':
       return 'password';
+    case "Employee's Password":
+      return 'defaultPassword';
     default:
       return uiKey;
   }

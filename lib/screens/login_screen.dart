@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shifttime/utilities/setSession.dart';
 import '../utilities/constants.dart';
 import '../utilities/getSession.dart';
@@ -10,8 +11,8 @@ import '../utilities/text_form_field_widget.dart';
 import 'admin_home_screen.dart';
 import 'user_home_screen.dart';
 import 'package:intl/intl.dart';
-class LoginScreen extends StatefulWidget {
 
+class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -26,7 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _femailController = TextEditingController();
   final TextEditingController _fbirthDateController = TextEditingController();
   final TextEditingController _fpasswordController = TextEditingController();
-  final TextEditingController _fpasswordConfController = TextEditingController();
+  final TextEditingController _fpasswordConfController =
+      TextEditingController();
 
   bool isChecked = true;
 
@@ -45,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // ),
     ));
   }
+
   //validate if email, password and client id is empty or not
   bool _validateFields() {
     if (_emailController.text.isEmpty ||
@@ -59,17 +62,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return true;
   }
+
   bool _isValidEmail(String email) {
     //  regular expression for email validation
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
   }
-
+  Future<void> saveSessionData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userToken', userToken);
+    prefs.setString('userId', userId);
+    prefs.setString('userRole', userRole);
+    prefs.setString('clientId', clientId);
+    prefs.setString('firstName', firstName);
+    prefs.setString('defaultPassword', defaultPassword);
+  }
 
   Future<void> loginUser() async {
-
-    final url = '$apiPrefix /users/login';
+    final url = '$apiPrefix/users/login';
     try {
+      print(url);
       final response = await http.post(
         Uri.parse(url),
         headers: <String, String>{
@@ -83,34 +95,36 @@ class _LoginScreenState extends State<LoginScreen> {
         }),
       );
       final Map<String, dynamic> responseData = json.decode(response.body);
-
+print(responseData);
       if (responseData['type'] == 'SUCCESS') {
-          userToken = responseData['response']['token'];
-          userRole = responseData['response']['user']['role'];
-          userId= responseData['response']['user']['_id'];
-          clientId =responseData['response']['user']['clientId'].toString();
-          firstName =responseData['response']['user']['firstName'];
-          await setSession('userToken', userToken);
-          await setSession('userRole', userRole);
-          await setSession('clientId', clientId);
-          await setSession('firstName', firstName);
-
+        print(responseData);
+        userToken = responseData['response']['token'];
+        userRole = responseData['response']['user']['role'];
+        userId = responseData['response']['user']['_id'];
+        clientId = responseData['response']['user']['clientId'].toString();
+        firstName = responseData['response']['user']['firstName'];
+        if(userRole == "ADMIN"){
+          defaultPassword = responseData['response']['user']['defaultPassword'];
+          await setSession('defaultPassword', defaultPassword);
+        }
+        await setSession('userToken', userToken);
+        await setSession('userRole', userRole);
+        await setSession('clientId', clientId);
+        await setSession('firstName', firstName);
         String data = await loadSession('userToken');
         String userRoleData = await loadSession('userRole');
-
-        if(userRoleData == "EMPLOYEE"){
+        saveSessionData();
+        if (userRoleData == "EMPLOYEE") {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const UserHomeScreen()),
           );
-        }
-        else{
+        } else {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
           );
         }
-
       } else {
         _showSnackbar(responseData['message']);
       }
@@ -118,19 +132,23 @@ class _LoginScreenState extends State<LoginScreen> {
       _showSnackbar('Failed to load data');
     }
   }
+
   onTapFunction({required BuildContext context}) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       lastDate: DateTime.now(),
       firstDate: DateTime(2015),
       initialDate: DateTime.now(),
-
     );
     if (pickedDate == null) return;
     _fbirthDateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
   }
 
   Widget _buildLoginUI(double width, double height) {
+    double containerWidth =
+        MediaQuery.of(context).size.width < mobileScreenWidthThreshold
+            ? width * 0.6
+            : width * 0.4;
     return ListView(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -182,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Center(
             child: Container(
-              width: width * .6,
+              width: containerWidth,
               child: TextFormFieldWidget(
                 keyboardType: TextInputType.text,
                 validator: (String value) {
@@ -196,7 +214,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: const Icon(
                   Icons.email_outlined,
                   color: clrGreenOriginal,
-                ), maxLength:100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
@@ -208,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Center(
             child: Container(
-              width: width * .6,
+              width: containerWidth,
               child: TextFormFieldWidget(
                 obSecureText: true,
                 keyboardType: TextInputType.text,
@@ -223,7 +242,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: const Icon(
                   Icons.password_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
@@ -235,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.only(left: 50.0, right: 50.0),
           child: Center(
             child: Container(
-              width: width * .6,
+              width: containerWidth,
               child: TextFormFieldWidget(
                 keyboardType: TextInputType.number,
                 validator: (String value) {
@@ -243,41 +263,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     return 'Client Id is required';
                   }
                 },
-                controller:_clientIdController,
-
+                controller: _clientIdController,
                 labelText: 'Client Id',
                 hintText: 'enter your client id',
                 icon: const Icon(
                   Icons.person,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Checkbox(
-        //       value: isChecked,
-        //       onChanged: (newValue) {
-        //         setState(() {
-        //           isChecked = newValue!;
-        //         });
-        //       },
-        //       activeColor: clrGreenOriginalLight,
-        //       checkColor: blueColor,
-        //     ),
-        //     const Text(
-        //       'Remember Me',
-        //       style: TextStyle(
-        //         color: Color(0xFF5E5F5E),
-        //         fontWeight: FontWeight.bold,
-        //         fontFamily: fontFamily,
-        //       ),
-        //     ),
-        //   ],
-        // ),
         const SizedBox(
           height: 20.0,
         ),
@@ -294,36 +291,39 @@ class _LoginScreenState extends State<LoginScreen> {
               bgColor: clrGreenOriginalLight,
               buttonTextColor: blueColor,
             ),
-//             RaisedButtonWidget(
-//               buttonText: 'Log In admin',
-//               onPressed: () async {
-//                 setState(() {
-//                   clientId='1001';
-//                   firstName='Pratik';
-//                 });
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
-//                 );
-//               },
-//               bgColor: clrGreenOriginalLight,
-//               buttonTextColor: blueColor,
-//             ),
-//             RaisedButtonWidget(
-//               buttonText: 'Log In user',
-//               onPressed: () async {
-// setState(() {
-//   clientId='1001';
-//   firstName='Pratik';
-// });
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(builder: (context) => const UserHomeScreen()),
-//                 );
-//               },
-//               bgColor: clrGreenOriginalLight,
-//               buttonTextColor: blueColor,
-//             ),
+            // RaisedButtonWidget(
+            //   buttonText: 'Log In admin',
+            //   onPressed: () async {
+            //     setState(() {
+            //       clientId = '1001';
+            //       firstName = 'Pratik';
+            //     });
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (context) => const AdminHomeScreen()),
+            //     );
+            //   },
+            //   bgColor: clrGreenOriginalLight,
+            //   buttonTextColor: blueColor,
+            // ),
+            // RaisedButtonWidget(
+            //   buttonText: 'Log In user',
+            //   onPressed: () async {
+            //     setState(() {
+            //       clientId = '1001';
+            //       firstName = 'Pratik';
+            //       userId = '6605d586e0ee7c70cc9f6e6d';
+            //     });
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (context) => const UserHomeScreen()),
+            //     );
+            //   },
+            //   bgColor: clrGreenOriginalLight,
+            //   buttonTextColor: blueColor,
+            // ),
           ],
         ),
         const SizedBox(
@@ -333,9 +333,14 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Forgot Password?'),
-            TextButton(onPressed: () { setState(() {
-              showLogin=false;
-            }); }, child: Text('Click Here!'),)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  showLogin = false;
+                });
+              },
+              child: Text('Click Here!'),
+            )
           ],
         )
       ],
@@ -398,7 +403,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.only(left: 50.0, right: 5),
               child: Center(
                 child: Container(
-                  width: ((width * .6)/2)-2.5,
+                  width: ((width * .6) / 2) - 2.5,
                   child: TextFormFieldWidget(
                     keyboardType: TextInputType.number,
                     validator: (String value) {
@@ -406,14 +411,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         return 'Client Id is required';
                       }
                     },
-                    controller:_fclientIdController,
-
+                    controller: _fclientIdController,
                     labelText: 'Client Id',
                     hintText: 'enter your client id',
                     icon: const Icon(
                       Icons.person,
                       color: clrGreenOriginal,
-                    ), maxLength: 100,
+                    ),
+                    maxLength: 100,
                   ),
                 ),
               ),
@@ -421,17 +426,15 @@ class _LoginScreenState extends State<LoginScreen> {
             Column(
               children: [
                 Padding(
-
                   padding: const EdgeInsets.only(left: 5, right: 50.0),
                   child: Center(
                     child: Container(
-                      width: ((width * .6)/2)-2.5,
+                      width: ((width * .6) / 2) - 2.5,
                       child: TextFormField(
                         onTap: () => onTapFunction(context: context),
                         keyboardType: TextInputType.text,
                         controller: _fbirthDateController,
                         decoration: InputDecoration(
-
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.black12),
                             borderRadius: BorderRadius.circular(50.0),
@@ -441,13 +444,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderSide: BorderSide(color: Color(0xFF83C43E)),
                           ),
                           isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 20.0),
                           labelText: 'Birth Date',
                           labelStyle: TextStyle(
                             color: Color(0xFF83C43E),
                             fontFamily: fontFamily,
                           ),
-                          hintText:  'enter your Birth Date',
+                          hintText: 'enter your Birth Date',
                           hintStyle: TextStyle(
                             color: Colors.grey,
                             fontSize: 12.0,
@@ -461,7 +465,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         cursorColor: Color(0xFF83C43E),
-
                       ),
                     ),
                   ),
@@ -488,14 +491,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     return 'Email is required';
                   }
                 },
-
                 controller: _femailController,
                 labelText: 'Email',
                 hintText: 'enter your email',
                 icon: const Icon(
                   Icons.email_outlined,
                   color: clrGreenOriginal,
-                ), maxLength:100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
@@ -523,7 +526,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: const Icon(
                   Icons.password_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
@@ -550,7 +554,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: const Icon(
                   Icons.password_outlined,
                   color: clrGreenOriginal,
-                ), maxLength: 100,
+                ),
+                maxLength: 100,
               ),
             ),
           ),
@@ -603,9 +608,14 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Cancel Forgot Password?'),
-            TextButton(onPressed: () { setState(() {
-              showLogin=true;
-            }); }, child: const Text('Login Here!'),)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  showLogin = true;
+                });
+              },
+              child: const Text('Login Here!'),
+            )
           ],
         )
       ],
@@ -616,8 +626,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    var radious = width < 600 ? width * .5 : width * .1;
     return Scaffold(
-      appBar: AppBar(backgroundColor: clrGreenOriginal,),
+      appBar: AppBar(
+        backgroundColor: clrGreenOriginal,
+      ),
       backgroundColor: clrGreenOriginal,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -635,8 +648,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(500.0),
-                    bottomRight: Radius.circular(500.0),
+                    topRight: Radius.circular(150),
+                    bottomRight: Radius.circular(0.0),
                   ),
                 ),
                 child: Padding(
@@ -661,5 +674,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-

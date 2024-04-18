@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _ManageBookoffState extends State<ManageBookoff> {
         });
         print(bookoffList);
       } else {
-        print('Failed to fetch bookoff. Status code: ${response.statusCode}');
+        print('Failed to fetch bookoffff. Status code: ${response.statusCode}');
       }
     } catch (error) {
       print('Error fetching bookoff: $error');
@@ -128,16 +129,16 @@ class _ManageBookoffState extends State<ManageBookoff> {
   }
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double listWidth = screenWidth < 600 ? screenWidth * 0.9 : 600;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             SizedBox(
-              width: double.infinity,
-            ),
-            SizedBox(
-              width: double.infinity,
+              width: listWidth,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DropdownButtonFormField<String>(
@@ -176,21 +177,26 @@ class _ManageBookoffState extends State<ManageBookoff> {
                   onDoubleTap: (){
                     _showApprovalDialog(bookoff);
                   },
-                  child: Card(
-                    margin: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
+                  child: Center(
+                    child: Container(
+                      width: listWidth,
+                      child: Card(
+                        margin: const EdgeInsets.all(16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
 
-                    color: isApproved ? clrGreenWhite90 : Colors.red.shade50, // Change color based on approval status
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: ListTile(
-                        title: Text('${isApproved ? 'Approved' : 'Approval Pending'} \nReason: ${bookoff['reasons']}'),
-                        subtitle: Text(
-                          'Period: ${bookoff['start_date']} To ${bookoff['end_date']} \nDays: ${calculateDaysDifference(bookoff['start_date'], bookoff['end_date'])}',
+                        color: isApproved ? clrGreenWhite90 : Colors.red.shade50, // Change color based on approval status
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: ListTile(
+                            title: Text('${isApproved ? 'Approved' : 'Approval Pending'} \nReason: ${bookoff['reasons']}'),
+                            subtitle: Text(
+                              'Period: ${bookoff['start_date']} To ${bookoff['end_date']} \nDays: ${calculateDaysDifference(bookoff['start_date'], bookoff['end_date'])}',
 
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -87,6 +87,8 @@ class _CategoryFormState extends State<CategoryForm> {
     ));
   }
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double listWidth = screenWidth < 600 ? screenWidth * 0.9 : 600;
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,39 +97,44 @@ class _CategoryFormState extends State<CategoryForm> {
             width: double.infinity,
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: userData.length,
-              itemBuilder: (context, index) {
-                Category category = Category.fromJson(userData[index]);
-                return Card(
-                    elevation: 3, // Adjust elevation as needed
-                    margin: EdgeInsets.all(8), // Adjust margin as needed
-                child: ListTile(
-                title: Text(category.name),trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          _editCategory(category);
-                        });
+            child: Center(
+              child: Container(
+                width: listWidth,
+                child: ListView.builder(
+                  itemCount: userData.length,
+                  itemBuilder: (context, index) {
+                    Category category = Category.fromJson(userData[index]);
+                    return Card(
+                        elevation: 3, // Adjust elevation as needed
+                        margin: EdgeInsets.all(8), // Adjust margin as needed
+                    child: ListTile(
+                    title: Text(category.name),trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            setState(() {
+                              _editCategory(category);
+                            });
 
-                      },
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              _deleteCategory(category.id);
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          _deleteCategory(category.id);
-                        });
-                      },
                     ),
-                  ],
+                    );
+                  },
                 ),
-                ),
-                );
-              },
+              ),
             ),
           ),
         ],
@@ -171,6 +178,7 @@ class _CategoryFormState extends State<CategoryForm> {
       // Check the response status
       if (response.statusCode == 200) {
         _showSnackbar('Category saved successfully',Colors.green);
+        _fetchCategories();
       } else {
         _showSnackbar('Failed to save category. Status code: ${response.statusCode}',Colors.red);
 
@@ -181,6 +189,7 @@ class _CategoryFormState extends State<CategoryForm> {
       // Handle network error
       _showSnackbar('Error making HTTP request: $error',Colors.red);
     }
+
   }
   Future<void> _deleteCategory(String categoryId) async {
     String apiUrl = '$apiPrefix/category/$categoryId';
@@ -205,6 +214,7 @@ class _CategoryFormState extends State<CategoryForm> {
     }
   }
   Future<void> _editCategory(Category category) async {
+
     // Implement edit functionality here
     // Open the update availability popup with the category details
     categoryController.text=category.name;

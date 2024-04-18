@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shifttime/screens/admin_schedule_screen1.dart';
+import 'package:shifttime/screens/login_screen.dart';
 import 'package:shifttime/screens/user_setting_screen.dart';
 
 import '../components/add_categories_form.dart';
 import '../utilities/constants.dart';
 import 'admin_availability_manage.dart';
 import 'admin_bookoff_manage.dart';
+import 'admin_home_manage.dart';
 import 'admin_schedule_screen.dart';
 import 'admin_sendemail_screen.dart';
 import 'admin_setting_screen.dart';
@@ -14,6 +17,7 @@ import 'manage_emp_screen.dart';
 void main() => runApp(const AdminHomeScreen());
 
 class AdminHomeScreen extends StatelessWidget {
+
   const AdminHomeScreen({super.key});
 
   @override
@@ -39,10 +43,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static  List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
+    Home(),
     ScheduleManageScreen1(),
     ManageEmpScreen(),
     CategoryForm(),
@@ -50,8 +51,21 @@ class _AdminHomePageState extends State<AdminHomePage> {
     ManageBookoff(),
     SendEmail(),
     AdminSettingScreen()
-
   ];
+  void _logout(BuildContext context) async {
+    // Clear user session
+    await clearSessionData();
+
+    // Navigate back to the login screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+  Future<void> clearSessionData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear(); // Clears all stored data
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -68,6 +82,12 @@ class _AdminHomePageState extends State<AdminHomePage> {
         backgroundColor: clrGreenOriginal,
         title: Text('ShiftTime', style: TextStyle(color: clrWhite, fontSize: 30, letterSpacing: 1, fontWeight: FontWeight.bold),),
         // leading: Image(image: const AssetImage('images/ShiftTimeIconWhite.png'),),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _logout(context), // Call logout function on button press
+          ),
+        ],
       ),
       body: Container(
         height: height,
