@@ -347,280 +347,280 @@ print(responseData);
     );
   }
 
-  Widget _buildForgotPasswordUI(double width, double height) {
-    return ListView(
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      children: [
-        Hero(
-          tag: 'tagImage',
-          child: Center(
-            child: Image(
-              image: const AssetImage('images/shifttime.png'),
-              height: height * .2,
-              width: height * .5,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        const Center(
-          child: Text(
-            'Change Password',
-            style: TextStyle(
-              letterSpacing: 1.5,
-              fontSize: 26.0,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF5E5F5E),
-              fontFamily: fontFamily,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        const Center(
-          child: Text(
-            'Employee Shift Scheduling System',
-            style: TextStyle(
-              fontSize: 15.0,
-              fontWeight: FontWeight.bold,
-              color: clrGreenOriginal,
-              fontFamily: fontFamily,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 30.0,
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 50.0, right: 5),
-              child: Center(
-                child: Container(
-                  width: ((width * .6) / 2) - 2.5,
-                  child: TextFormFieldWidget(
-                    keyboardType: TextInputType.number,
-                    validator: (String value) {
-                      if (value.isEmpty) {
-                        return 'Client Id is required';
-                      }
-                    },
-                    controller: _fclientIdController,
-                    labelText: 'Client Id',
-                    hintText: 'enter your client id',
-                    icon: const Icon(
-                      Icons.person,
-                      color: clrGreenOriginal,
-                    ),
-                    maxLength: 100,
-                  ),
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5, right: 50.0),
-                  child: Center(
-                    child: Container(
-                      width: ((width * .6) / 2) - 2.5,
-                      child: TextFormField(
-                        onTap: () => onTapFunction(context: context),
-                        keyboardType: TextInputType.text,
-                        controller: _fbirthDateController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.black12),
-                            borderRadius: BorderRadius.circular(50.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(50.0),
-                            borderSide: BorderSide(color: Color(0xFF83C43E)),
-                          ),
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 20.0),
-                          labelText: 'Birth Date',
-                          labelStyle: TextStyle(
-                            color: Color(0xFF83C43E),
-                            fontFamily: fontFamily,
-                          ),
-                          hintText: 'enter your Birth Date',
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.0,
-                            fontFamily: fontFamily,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          prefixIcon: const Icon(
-                            Icons.date_range,
-                            color: clrGreenOriginal,
-                          ),
-                        ),
-                        cursorColor: Color(0xFF83C43E),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-          child: Center(
-            child: Container(
-              width: width * .6,
-              child: TextFormFieldWidget(
-                keyboardType: TextInputType.text,
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Email is required';
-                  }
-                },
-                controller: _femailController,
-                labelText: 'Email',
-                hintText: 'enter your email',
-                icon: const Icon(
-                  Icons.email_outlined,
-                  color: clrGreenOriginal,
-                ),
-                maxLength: 100,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-
-        Padding(
-          padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-          child: Center(
-            child: Container(
-              width: width * .6,
-              child: TextFormFieldWidget(
-                obSecureText: true,
-                keyboardType: TextInputType.text,
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'New password is required';
-                  }
-                },
-                controller: _fpasswordController,
-                labelText: 'New Password',
-                hintText: 'enter new password',
-                icon: const Icon(
-                  Icons.password_outlined,
-                  color: clrGreenOriginal,
-                ),
-                maxLength: 100,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10.0,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 50.0, right: 50.0),
-          child: Center(
-            child: Container(
-              width: width * .6,
-              child: TextFormFieldWidget(
-                obSecureText: true,
-                keyboardType: TextInputType.text,
-                validator: (String value) {
-                  if (value.isEmpty) {
-                    return 'Confirm Password is required';
-                  }
-                },
-                controller: _fpasswordConfController,
-                labelText: 'Confirm Password',
-                hintText: 'confirm your password',
-                icon: const Icon(
-                  Icons.password_outlined,
-                  color: clrGreenOriginal,
-                ),
-                maxLength: 100,
-              ),
-            ),
-          ),
-        ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Checkbox(
-        //       value: isChecked,
-        //       onChanged: (newValue) {
-        //         setState(() {
-        //           isChecked = newValue!;
-        //         });
-        //       },
-        //       activeColor: clrGreenOriginalLight,
-        //       checkColor: blueColor,
-        //     ),
-        //     const Text(
-        //       'Remember Me',
-        //       style: TextStyle(
-        //         color: Color(0xFF5E5F5E),
-        //         fontWeight: FontWeight.bold,
-        //         fontFamily: fontFamily,
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        const SizedBox(
-          height: 20.0,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            RaisedButtonWidget(
-              buttonText: 'Update Log In',
-              onPressed: () async {
-                if (_validateFields()) {
-                  loginUser();
-                }
-              },
-              bgColor: clrGreenOriginalLight,
-              buttonTextColor: blueColor,
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 20.0,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Cancel Forgot Password?'),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  showLogin = true;
-                });
-              },
-              child: const Text('Login Here!'),
-            )
-          ],
-        )
-      ],
-    );
-  }
+  // Widget _buildForgotPasswordUI(double width, double height) {
+  //   return ListView(
+  //     shrinkWrap: true,
+  //     physics: const BouncingScrollPhysics(),
+  //     scrollDirection: Axis.vertical,
+  //     children: [
+  //       Hero(
+  //         tag: 'tagImage',
+  //         child: Center(
+  //           child: Image(
+  //             image: const AssetImage('images/shifttime.png'),
+  //             height: height * .2,
+  //             width: height * .5,
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(
+  //         height: 10.0,
+  //       ),
+  //       const Center(
+  //         child: Text(
+  //           'Change Password',
+  //           style: TextStyle(
+  //             letterSpacing: 1.5,
+  //             fontSize: 26.0,
+  //             fontWeight: FontWeight.bold,
+  //             color: Color(0xFF5E5F5E),
+  //             fontFamily: fontFamily,
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(
+  //         height: 10.0,
+  //       ),
+  //       const Center(
+  //         child: Text(
+  //           'Employee Shift Scheduling System',
+  //           style: TextStyle(
+  //             fontSize: 15.0,
+  //             fontWeight: FontWeight.bold,
+  //             color: clrGreenOriginal,
+  //             fontFamily: fontFamily,
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(
+  //         height: 30.0,
+  //       ),
+  //
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Padding(
+  //             padding: const EdgeInsets.only(left: 50.0, right: 5),
+  //             child: Center(
+  //               child: Container(
+  //                 width: ((width * .6) / 2) - 2.5,
+  //                 child: TextFormFieldWidget(
+  //                   keyboardType: TextInputType.number,
+  //                   validator: (String value) {
+  //                     if (value.isEmpty) {
+  //                       return 'Client Id is required';
+  //                     }
+  //                   },
+  //                   controller: _fclientIdController,
+  //                   labelText: 'Client Id',
+  //                   hintText: 'enter your client id',
+  //                   icon: const Icon(
+  //                     Icons.person,
+  //                     color: clrGreenOriginal,
+  //                   ),
+  //                   maxLength: 100,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           Column(
+  //             children: [
+  //               Padding(
+  //                 padding: const EdgeInsets.only(left: 5, right: 50.0),
+  //                 child: Center(
+  //                   child: Container(
+  //                     width: ((width * .6) / 2) - 2.5,
+  //                     child: TextFormField(
+  //                       onTap: () => onTapFunction(context: context),
+  //                       keyboardType: TextInputType.text,
+  //                       controller: _fbirthDateController,
+  //                       decoration: InputDecoration(
+  //                         border: OutlineInputBorder(
+  //                           borderSide: BorderSide(color: Colors.black12),
+  //                           borderRadius: BorderRadius.circular(50.0),
+  //                         ),
+  //                         focusedBorder: OutlineInputBorder(
+  //                           borderRadius: BorderRadius.circular(50.0),
+  //                           borderSide: BorderSide(color: Color(0xFF83C43E)),
+  //                         ),
+  //                         isDense: true,
+  //                         contentPadding: EdgeInsets.symmetric(
+  //                             vertical: 5.0, horizontal: 20.0),
+  //                         labelText: 'Birth Date',
+  //                         labelStyle: TextStyle(
+  //                           color: Color(0xFF83C43E),
+  //                           fontFamily: fontFamily,
+  //                         ),
+  //                         hintText: 'enter your Birth Date',
+  //                         hintStyle: TextStyle(
+  //                           color: Colors.grey,
+  //                           fontSize: 12.0,
+  //                           fontFamily: fontFamily,
+  //                         ),
+  //                         filled: true,
+  //                         fillColor: Colors.white,
+  //                         prefixIcon: const Icon(
+  //                           Icons.date_range,
+  //                           color: clrGreenOriginal,
+  //                         ),
+  //                       ),
+  //                       cursorColor: Color(0xFF83C43E),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               const SizedBox(
+  //                 height: 20.0,
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(
+  //         height: 10.0,
+  //       ),
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+  //         child: Center(
+  //           child: Container(
+  //             width: width * .6,
+  //             child: TextFormFieldWidget(
+  //               keyboardType: TextInputType.text,
+  //               validator: (String value) {
+  //                 if (value.isEmpty) {
+  //                   return 'Email is required';
+  //                 }
+  //               },
+  //               controller: _femailController,
+  //               labelText: 'Email',
+  //               hintText: 'enter your email',
+  //               icon: const Icon(
+  //                 Icons.email_outlined,
+  //                 color: clrGreenOriginal,
+  //               ),
+  //               maxLength: 100,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(
+  //         height: 10.0,
+  //       ),
+  //
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+  //         child: Center(
+  //           child: Container(
+  //             width: width * .6,
+  //             child: TextFormFieldWidget(
+  //               obSecureText: true,
+  //               keyboardType: TextInputType.text,
+  //               validator: (String value) {
+  //                 if (value.isEmpty) {
+  //                   return 'New password is required';
+  //                 }
+  //               },
+  //               controller: _fpasswordController,
+  //               labelText: 'New Password',
+  //               hintText: 'enter new password',
+  //               icon: const Icon(
+  //                 Icons.password_outlined,
+  //                 color: clrGreenOriginal,
+  //               ),
+  //               maxLength: 100,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(
+  //         height: 10.0,
+  //       ),
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+  //         child: Center(
+  //           child: Container(
+  //             width: width * .6,
+  //             child: TextFormFieldWidget(
+  //               obSecureText: true,
+  //               keyboardType: TextInputType.text,
+  //               validator: (String value) {
+  //                 if (value.isEmpty) {
+  //                   return 'Confirm Password is required';
+  //                 }
+  //               },
+  //               controller: _fpasswordConfController,
+  //               labelText: 'Confirm Password',
+  //               hintText: 'confirm your password',
+  //               icon: const Icon(
+  //                 Icons.password_outlined,
+  //                 color: clrGreenOriginal,
+  //               ),
+  //               maxLength: 100,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       // Row(
+  //       //   mainAxisAlignment: MainAxisAlignment.center,
+  //       //   children: [
+  //       //     Checkbox(
+  //       //       value: isChecked,
+  //       //       onChanged: (newValue) {
+  //       //         setState(() {
+  //       //           isChecked = newValue!;
+  //       //         });
+  //       //       },
+  //       //       activeColor: clrGreenOriginalLight,
+  //       //       checkColor: blueColor,
+  //       //     ),
+  //       //     const Text(
+  //       //       'Remember Me',
+  //       //       style: TextStyle(
+  //       //         color: Color(0xFF5E5F5E),
+  //       //         fontWeight: FontWeight.bold,
+  //       //         fontFamily: fontFamily,
+  //       //       ),
+  //       //     ),
+  //       //   ],
+  //       // ),
+  //       const SizedBox(
+  //         height: 20.0,
+  //       ),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           RaisedButtonWidget(
+  //             buttonText: 'Update Log In',
+  //             onPressed: () async {
+  //               if (_validateFields()) {
+  //                 loginUser();
+  //               }
+  //             },
+  //             bgColor: clrGreenOriginalLight,
+  //             buttonTextColor: blueColor,
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(
+  //         height: 20.0,
+  //       ),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           const Text('Cancel Forgot Password?'),
+  //           TextButton(
+  //             onPressed: () {
+  //               setState(() {
+  //                 showLogin = true;
+  //               });
+  //             },
+  //             child: const Text('Login Here!'),
+  //           )
+  //         ],
+  //       )
+  //     ],
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
